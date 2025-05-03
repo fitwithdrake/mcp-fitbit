@@ -8,7 +8,8 @@ import { fileURLToPath } from 'url';
 import { initializeAuth, startAuthorizationFlow, getAccessToken } from './auth.js';
 // Import tool registration function(s)
 import { registerWeightTool } from './weight.js';
-import { registerSleepTool } from './sleep.js'; // Import the new sleep tool registration function
+import { registerSleepTool } from './sleep.js';
+import { registerProfileTool } from './profile.js';
 // Import utilities
 import './utils.js';
 
@@ -37,7 +38,8 @@ const server = new McpServer({
 
 // Register available tools with the MCP server
 registerWeightTool(server, getAccessToken);
-registerSleepTool(server, getAccessToken); // Register the sleep tool
+registerSleepTool(server, getAccessToken);
+registerProfileTool(server, getAccessToken);
 
 // --- Main Application Entry Point ---
 async function main() {
