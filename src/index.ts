@@ -42,7 +42,7 @@ registerSleepTool(server, getAccessToken); // Register the sleep tool
 // --- Main Application Entry Point ---
 async function main() {
     // Initialize the authentication module (e.g., load persisted token)
-    initializeAuth();
+    await initializeAuth();
 
     // Set up the transport layer for communication (stdio in this case)
     const transport = new StdioServerTransport();

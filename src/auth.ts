@@ -3,15 +3,17 @@ import express, { Request, Response } from 'express';
 import http from 'http';
 import open from 'open';
 import path from 'path';
-import { AuthorizationCode } from 'simple-oauth2';
+import { AuthorizationCode, AccessToken } from 'simple-oauth2';
 import { fileURLToPath } from 'url';
+import fs from 'fs/promises';
+import { existsSync } from 'fs';
 
 // Determine the directory of the current module (build/auth.js)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const currentFilename = fileURLToPath(import.meta.url);
+const currentDirname = path.dirname(currentFilename);
 
 // Load environment variables from .env file located in the project root
-const envPath = path.resolve(__dirname, '..', '.env');
+const envPath = path.resolve(currentDirname, '..', '.env');
 dotenv.config({ path: envPath });
 
 // Fitbit OAuth2 Configuration
@@ -35,13 +37,51 @@ const REDIRECT_URI = 'http://localhost:3000/callback';
 const PORT = 3000;
 
 // --- State Management ---
-// In-memory storage for the access token. Consider a more persistent store for production.
+// Storage for the access token and token data
 let accessToken: string | null = null;
+let tokenData: any = null;
 // Holds the temporary HTTP server instance used for the OAuth callback
 let oauthServer: http.Server | null = null;
 
+// --- File paths for token persistence ---
+const TOKEN_FILE_PATH = path.resolve(currentDirname, '..', '.fitbit-token.json');
+
 // --- OAuth Client Initialization ---
 const oauthClient = new AuthorizationCode(fitbitConfig);
+
+/**
+ * Saves the token data to a file for persistence
+ * @param tokenData The token data to save
+ */
+async function saveTokenToFile(tokenData: any): Promise<void> {
+    try {
+        await fs.writeFile(TOKEN_FILE_PATH, JSON.stringify(tokenData, null, 2), 'utf8');
+        console.error(`Token saved to ${TOKEN_FILE_PATH}`);
+    } catch (error) {
+        console.error(`Error saving token to file: ${error}`);
+    }
+}
+
+/**
+ * Loads the token data from file
+ * @returns The token data or null if not found
+ */
+async function loadTokenFromFile(): Promise<any> {
+    try {
+        if (!existsSync(TOKEN_FILE_PATH)) {
+            console.error(`Token file not found at ${TOKEN_FILE_PATH}`);
+            return null;
+        }
+        
+        const data = await fs.readFile(TOKEN_FILE_PATH, 'utf8');
+        const parsedData = JSON.parse(data);
+        console.error('Token loaded from file successfully');
+        return parsedData;
+    } catch (error) {
+        console.error(`Error loading token from file: ${error}`);
+        return null;
+    }
+}
 
 // --- Fitbit Authorization Flow ---
 
@@ -100,8 +140,11 @@ export function startAuthorizationFlow(): void {
             const tokenResult = await oauthClient.getToken(tokenParams);
             console.error('Access Token received successfully!');
             accessToken = tokenResult.token.access_token as string;
-            // TODO: Persist tokenResult.token securely (including refresh token and expiry)
-            // For now, it's stored in memory (accessToken variable)
+            tokenData = tokenResult.token;
+            
+            // Persist token data to file
+            await saveTokenToFile(tokenData);
+            console.error('Token data has been persisted to file');
 
             res.send('Authorization successful! You can close this window. The MCP Server is now authenticated.');
 
@@ -166,12 +209,46 @@ export function getAccessToken(): string | null {
 
 /**
  * Initializes the authentication module.
- * Placeholder for future logic like loading persisted tokens.
+ * Loads persisted token from file storage if available.
  */
-export function initializeAuth(): void {
-    // TODO: Load persisted token from secure storage if available
+export async function initializeAuth(): Promise<void> {
     console.error("Auth initialized. Checking for persisted token...");
-    if (!accessToken) {
-        console.error("No persisted access token found.");
+    
+    try {
+        // Load token data from file
+        tokenData = await loadTokenFromFile();
+        
+        if (tokenData && tokenData.access_token) {
+            accessToken = tokenData.access_token;
+            console.error("Persisted access token loaded successfully.");
+            
+            // Check if token is expired and needs refresh
+            if (tokenData.expires_at && new Date(tokenData.expires_at) < new Date()) {
+                console.error("Token is expired. Attempting to refresh...");
+                try {
+                    // Create AccessToken instance from the loaded token data
+                    const accessTokenObj = oauthClient.createToken(tokenData);
+                    
+                    // Refresh the token
+                    if (accessTokenObj.expired()) {
+                        const refreshedToken = await accessTokenObj.refresh();
+                        accessToken = refreshedToken.token.access_token as string;
+                        tokenData = refreshedToken.token;
+                        
+                        // Save the refreshed token
+                        await saveTokenToFile(tokenData);
+                        console.error("Token refreshed and saved successfully.");
+                    }
+                } catch (refreshError) {
+                    console.error("Failed to refresh token:", refreshError);
+                    accessToken = null;
+                    tokenData = null;
+                }
+            }
+        } else {
+            console.error("No persisted access token found or token data is invalid.");
+        }
+    } catch (error) {
+        console.error("Error during token initialization:", error);
     }
 }
