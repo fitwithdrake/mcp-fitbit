@@ -28,7 +28,7 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
 
 1.  **Clone the Repository:**
     ```bash
-    git clone <your-repository-url>
+    git clone https://github.com/TheDigitalNinja/mcp-fitbit
     cd MCP-Server
     ```
 
