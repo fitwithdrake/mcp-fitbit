@@ -38,7 +38,7 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
     ```
 
 3.  **Create Environment File:**
-    *   Create a file named `.env` in the project root (`MCP-Server/`).
+    *   Create a file named `.env` in the project root (`mcp-fitbit/`).
     *   Add your Fitbit application credentials:
         ```dotenv
         FITBIT_CLIENT_ID=YOUR_FITBIT_CLIENT_ID
