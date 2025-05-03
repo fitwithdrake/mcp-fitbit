@@ -1,38 +1,38 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { z } from "zod"; // Keep Zod for potential future use, though not needed for this tool
 
 // Fitbit API Configuration (can be shared or passed)
 const FITBIT_API_BASE = "https://api.fitbit.com/1";
 const USER_AGENT = "mcp-fitbit-server/1.0"; // Or get from a central config
 
-// Interfaces for Fitbit Weight Data
-interface WeightLog {
-  bmi: number;
-  date: string;
-  logId: number;
-  time: string;
-  weight: number;
-  source: string;
+// Simplified interface for time series data points
+interface WeightTimeSeriesEntry {
+  dateTime: string;
+  value: string; // Weight is returned as a string value here
 }
 
-interface WeightResponse {
-  weight: WeightLog[];
+// Interface for the time series response
+interface WeightTimeSeriesResponse {
+  'body-weight': WeightTimeSeriesEntry[];
 }
 
 // Helper function for making Fitbit API requests
 // Needs access token, passed via getAccessTokenFn
 async function makeFitbitRequest<T>(
-    endpoint: string,
+    endpoint: string, // Endpoint should be relative path like /body/log/weight.json
     getAccessTokenFn: () => string | null
 ): Promise<T | null> {
   const currentAccessToken = getAccessTokenFn();
   if (!currentAccessToken) {
     console.error("Error: No Fitbit Access Token available. Please authorize first.");
-    // Optionally, trigger the auth flow again here or return a specific error message
     return null;
   }
 
-  const url = `${FITBIT_API_BASE}${endpoint}`;
+  // Correct URL construction: Ensure only one slash between /user/- and the endpoint path
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
+  const url = `${FITBIT_API_BASE}/user/-/${cleanEndpoint}`;
+  console.error(`Attempting Fitbit API request to: ${url}`); // Log the corrected URL
+
   const headers = {
     "User-Agent": USER_AGENT,
     Authorization: `Bearer ${currentAccessToken}`,
@@ -43,85 +43,73 @@ async function makeFitbitRequest<T>(
     const response = await fetch(url, { headers });
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error(`Fitbit API Error! Status: ${response.status}, Body: ${errorBody}`);
+      // Log the URL that failed along with the error
+      console.error(`Fitbit API Error! Status: ${response.status}, URL: ${url}, Body: ${errorBody}`);
       if (response.status === 401) {
         console.error("Access token might be expired or invalid. Re-authorization may be needed.");
-        // Potentially clear the token and trigger re-auth?
-        // The auth module should handle token state based on errors maybe
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      return null; // Return null on non-ok response
     }
     return (await response.json()) as T;
   } catch (error) {
-    console.error("Error making Fitbit request:", error);
+    // Log the URL that failed along with the error
+    console.error(`Error making Fitbit request to ${url}:`, error);
     return null;
   }
 }
 
+// Define the expected structure for the tool response content
+type TextContent = { type: "text"; text: string };
 
-// Function to register the Fitbit weight tool
-export function registerWeightTool(
+// Define the expected structure for the tool response
+type ToolResponseStructure = {
+    content: TextContent[];
+    isError?: boolean;
+    _meta?: Record<string, unknown>;
+    [key: string]: unknown; // Allow other properties
+};
+
+
+// NEW Tool Registration Function
+export function registerWeightLast30DaysTool(
     server: McpServer,
-    getAccessTokenFn: () => string | null // Pass function to get token
+    getAccessTokenFn: () => string | null
 ): void {
-  server.tool(
-    "get-weight",
-    "Get the latest recorded weight entries for a specific date",
-    {
-      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).describe("Date in YYYY-MM-DD format"),
-    },
-    async ({ date }) => {
-      const weightEndpoint = `/user/-/body/log/weight/date/${date}.json`;
-      // Pass the token getter function to the request helper
-      const weightData = await makeFitbitRequest<WeightResponse>(weightEndpoint, getAccessTokenFn);
+    server.tool(
+        "get_weight_last_30_days", // Tool name
+        "Get all recorded weight entries from the last 30 days.", // Description
+        {}, // No input parameters
+        async (): Promise<ToolResponseStructure> => { // No arguments needed in callback
 
-      if (!weightData) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Failed to retrieve weight data for ${date}. Ensure the access token is valid and has the required permissions, or try authorizing again.`,
-            },
-          ],
-        };
-      }
+            const weightEndpoint = `/body/weight/date/today/30d.json`;
+            const weightData = await makeFitbitRequest<WeightTimeSeriesResponse>(weightEndpoint, getAccessTokenFn);
 
-      const weightLogs = weightData.weight || [];
-      if (weightLogs.length === 0) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `No weight logged for ${date}.`
-            },
-          ],
-        };
-      }
+            if (!weightData) {
+                return {
+                    content: [{ type: "text", text: "Failed to retrieve weight data for the last 30 days. Ensure the access token is valid and has the required permissions." }],
+                    isError: true
+                };
+            }
 
-      const formattedWeight = weightLogs.map((log: WeightLog) =>
-        [
-          `Date: ${log.date}`,
-          `Time: ${log.time}`,
-          `Weight: ${log.weight}`,
-          `BMI: ${log.bmi}`,
-          `Source: ${log.source}`,
-          `Log ID: ${log.logId}`,
-          "---",
-        ].join("\\n"),
-      );
+            const weightEntries = weightData['body-weight'] || [];
 
-      const weightText = `Weight logs for ${date}:\\n\\n${formattedWeight.join("\\n")}`;
+            if (weightEntries.length === 0) {
+                return { content: [{ type: "text", text: "No weight data found in the last 30 days." }] };
+            }
 
-      return {
-        content: [
-          {
-            type: "text",
-            text: weightText,
-          },
-        ],
-      };
-    },
-  );
+            // Format the raw data as simple text for the LLM
+            const formattedEntries = weightEntries.map(entry =>
+                `Date: ${entry.dateTime}, Weight: ${entry.value}`
+            ).join("\n"); // Use literal for newlines in the final text string
 
-  console.error("Registered Fitbit 'get-weight' tool.");
+            const responseText = `Weight entries from the last 30 days:\n\n${formattedEntries}`; // Use literal
+
+
+            return {
+                content: [{ type: "text", text: responseText }],
+            };
+        }
+    );
+
+    console.error("Registered Fitbit 'get_weight_last_30_days' tool.");
 }

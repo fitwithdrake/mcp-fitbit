@@ -1,10 +1,19 @@
-import express from 'express';
+import express, { Request, Response } from 'express'; // Import Request and Response types
 import { AuthorizationCode } from 'simple-oauth2';
 import http from 'http';
 import open from 'open';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+// --- Load environment variables --- 
+// Calculate path relative to the *built* file in build/ directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// Go up one level from build/ to the project root
+const envPath = path.resolve(__dirname, '..', '.env'); 
+dotenv.config({ path: envPath });
+// --- End Load environment variables ---
 
 // Calculate the directory name relative to this file if needed,
 // but .env loading might be better handled in index.ts
@@ -47,32 +56,35 @@ export function startAuthorizationFlow(): void {
     }
     if (!fitbitConfig.client.id || !fitbitConfig.client.secret) {
         console.error("Error: Fitbit Client ID or Secret not found. Check environment variables.");
-        // Don't exit here, let the server run but log the error
         return;
     }
 
-    const app = express();
+    const app = express(); // Define app here
 
     const authorizationUri = oauthClient.authorizeURL({
         redirect_uri: REDIRECT_URI,
         scope: 'weight', // Define necessary scopes here
     });
 
-    app.get('/auth', (req, res) => {
+    // Use explicit types for req and res
+    app.get('/auth', (req: Request, res: Response) => {
         console.error('Redirecting to Fitbit for authorization...');
         res.redirect(authorizationUri);
     });
 
-    app.get('/callback', async (req, res) => {
+    // Use explicit types for req and res
+    app.get('/callback', async (req: Request, res: Response) => {
         const code = req.query.code as string;
         if (!code) {
-            res.status(400).send('Error: Authorization code missing.');
             console.error('Authorization code missing in callback.');
-             if (oauthServer) {
-                oauthServer.close(() => { console.error("OAuth server closed due to error."); });
+            // Check oauthServer before closing
+            if (oauthServer) {
+                oauthServer.close(() => { console.error("OAuth server closed due to missing code."); });
                 oauthServer = null;
             }
-            return;
+            // Ensure response is sent *after* attempting to close server
+            res.status(400).send('Error: Authorization code missing.');
+            return; // Exit function after sending response
         }
 
         console.error('Received authorization code. Exchanging for token...');
@@ -84,27 +96,35 @@ export function startAuthorizationFlow(): void {
             accessToken = tokenResult.token.access_token as string;
             // TODO: Persist tokenResult.token securely (including refresh token and expiry)
 
-            res.send('Authorization successful! You can close this window. The MCP Server is now authenticated.');
-
-            // Shutdown the temporary server
+            // Check oauthServer before closing
             if (oauthServer) {
                 console.error("Shutting down temporary OAuth server...");
                 oauthServer.close(() => {
-                    console.error("OAuth server closed.");
+                    console.error("OAuth server closed successfully.");
                     oauthServer = null; // Ensure server instance is cleared
                 });
             }
+            // Send response after attempting to close server
+            res.send('Authorization successful! You can close this window. The MCP Server is now authenticated.');
 
         } catch (error: any) {
             console.error('Error obtaining access token:', error.message || error);
             if (error.response) {
-                console.error('Error details:', await error.response.text());
+                try {
+                    // Attempt to read error details, might fail if response isn't text
+                    const errorDetails = await error.response.text();
+                    console.error('Error details:', errorDetails);
+                } catch (parseError) {
+                    console.error('Could not parse error response body.');
+                }
             }
-            res.status(500).send('Error obtaining access token. Check MCP server logs.');
-             if (oauthServer) {
-                oauthServer.close(() => { console.error("OAuth server closed due to error."); });
+            // Check oauthServer before closing
+            if (oauthServer) {
+                oauthServer.close(() => { console.error("OAuth server closed due to token exchange error."); });
                 oauthServer = null;
             }
+            // Send response after attempting to close server
+            res.status(500).send('Error obtaining access token. Check MCP server logs.');
         }
     });
 

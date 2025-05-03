@@ -4,11 +4,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Import functions from the new modules
-// Renaming import to avoid conflict if necessary, but the error suggests a local declaration conflict.
-// Let's ensure no local function/variable named startAuthorizationFlow exists.
 import { initializeAuth, startAuthorizationFlow, getAccessToken } from './auth.js';
-import { registerWeightTool } from './weight.js';
+import { registerWeightLast30DaysTool } from './weight.js';
 
 // Calculate the directory name of the current module (build/index.js)
 const __filename = fileURLToPath(import.meta.url);
@@ -18,6 +15,11 @@ const __dirname = path.dirname(__filename);
 // Load environment variables early
 const envPath = path.resolve(__dirname, '..', '.env');
 dotenv.config({ path: envPath });
+
+// --- Add logging here ---
+console.error(`[index.ts] After dotenv load: FITBIT_CLIENT_ID=${process.env.FITBIT_CLIENT_ID ? 'Loaded' : 'MISSING'}`);
+console.error(`[index.ts] After dotenv load: FITBIT_CLIENT_SECRET=${process.env.FITBIT_CLIENT_SECRET ? 'Loaded' : 'MISSING'}`);
+// --- End logging ---
 
 // Create MCP server instance
 const server = new McpServer({
@@ -30,11 +32,9 @@ const server = new McpServer({
 });
 
 // Register tools from modules
-// Pass the getAccessToken function from the auth module to the weight module
-registerWeightTool(server, getAccessToken);
+registerWeightLast30DaysTool(server, getAccessToken);
 
 // --- Main Application Logic ---
-// Ensure only one main function definition exists
 async function main() {
     // Initialize authentication (e.g., load token)
     initializeAuth();
