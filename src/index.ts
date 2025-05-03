@@ -4,8 +4,9 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Import authentication functions
 import { initializeAuth, startAuthorizationFlow, getAccessToken } from './auth.js';
-// Import the new factory registration function
+// Import tool registration function(s)
 import { registerWeightTools } from './weight.js';
 
 // Calculate the directory name of the current module (build/index.js)
@@ -13,47 +14,45 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Construct the absolute path to the .env file (one level up from build/)
-// Load environment variables early
+// Load environment variables early in the application lifecycle
 const envPath = path.resolve(__dirname, '..', '.env');
 dotenv.config({ path: envPath });
 
-// --- Add logging here ---
+// Log environment variable loading status for debugging
 console.error(`[index.ts] After dotenv load: FITBIT_CLIENT_ID=${process.env.FITBIT_CLIENT_ID ? 'Loaded' : 'MISSING'}`);
 console.error(`[index.ts] After dotenv load: FITBIT_CLIENT_SECRET=${process.env.FITBIT_CLIENT_SECRET ? 'Loaded' : 'MISSING'}`);
-// --- End logging ---
 
-// Create MCP server instance
+// Create the main MCP server instance
 const server = new McpServer({
   name: "fitbit",
   version: "1.0.0",
   capabilities: {
     resources: {},
-    tools: {}, // Tools will be registered below
+    tools: {}, // Tools are registered dynamically below
   },
 });
 
-// Register tools from modules
-// Use the new factory registration function
+// Register available tools with the MCP server
 registerWeightTools(server, getAccessToken);
 
-// --- Main Application Logic ---
+// --- Main Application Entry Point ---
 async function main() {
-    // Initialize authentication (e.g., load token)
+    // Initialize the authentication module (e.g., load persisted token)
     initializeAuth();
 
-    // --- Connect MCP Server ---
+    // Set up the transport layer for communication (stdio in this case)
     const transport = new StdioServerTransport();
 
     try {
+        // Connect the MCP server to the transport
         await server.connect(transport);
         console.error("Fitbit MCP Server connected via stdio.");
 
-        // --- Check for token or start auth flow AFTER connection ---
-        // Use the imported getAccessToken function
+        // Check if an access token is available after connection
+        // If not, initiate the OAuth2 authorization flow
         if (!getAccessToken()) {
             console.error("No access token found. Starting Fitbit authorization flow...");
-            // Use the imported startAuthorizationFlow function
-            startAuthorizationFlow(); // Start flow in background, DO NOT await
+            startAuthorizationFlow(); // Start flow in background, do not await
         } else {
             console.error("Using existing/loaded access token.");
         }
@@ -64,12 +63,11 @@ async function main() {
     }
 
     console.error("MCP Server setup complete. Waiting for requests...");
-    // Keep the process running; the server connection handles this.
-    // No need for an infinite loop or wait here, StdioServerTransport handles it.
+    // The server connection via StdioServerTransport keeps the process alive.
 }
 
-// Ensure the catch block correctly handles the error object
-main().catch((error: Error) => { // Add type annotation for error
-    console.error("Fatal error during MCP server startup:", error.message || error); // Log error message
+// Execute the main function and handle any top-level errors
+main().catch((error: Error) => {
+    console.error("Fatal error during MCP server startup:", error.message || error);
     process.exit(1);
 });
