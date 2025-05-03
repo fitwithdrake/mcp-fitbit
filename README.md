@@ -16,6 +16,8 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
     *   `get_weight`: Retrieves raw weight data for a specified period (`1d`, `7d`, `30d`, `3m`, `6m`, `1y`) ending today. Requires a `period` parameter.
 *   **Sleep:**
     *   `get_sleep_by_date_range`: Retrieves raw sleep log data for a specific date range (max 100 days). Requires `startDate` and `endDate` parameters in `YYYY-MM-DD` format.
+*   **Profile:**
+    *   `get_profile`: Retrieves the user's Fitbit profile information, including personal details such as name, age, gender, height, weight, and account information.
 
 ### Planned Endpoints
 
@@ -106,6 +108,9 @@ Once the server is running and authorized, the following tools will be available
         *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
         *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
     *   **Example Usage (Conceptual):** `get_sleep_by_date_range(startDate="2025-04-01", endDate="2025-04-30")`
+*   `get_profile`: Fetches the user's Fitbit profile information as a JSON string.
+    *   **Parameters:** None required.
+    *   **Example Usage (Conceptual):** `get_profile()`
 
 ## Development
 
