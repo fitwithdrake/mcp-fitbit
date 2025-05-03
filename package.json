@@ -1,5 +1,5 @@
 {
-  "name": "mcp-server",
+  "name": "mcp-fitbit-server",
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
@@ -8,21 +8,27 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && chmod 755 build/index.js"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "MCP Server for interacting with Fitbit API",
   "files": [
     "build"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.0",
+    "@types/express": "^5.0.1",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "open": "^10.1.2",
+    "simple-oauth2": "^5.1.0",
     "zod": "^3.24.3"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
+    "@types/simple-oauth2": "^5.0.7",
     "typescript": "^5.8.3"
   }
 }
