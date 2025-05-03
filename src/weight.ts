@@ -1,8 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { makeFitbitRequest, ToolResponseStructure } from "./utils.js";
 
 const FITBIT_API_BASE = "https://api.fitbit.com/1";
-const USER_AGENT = "mcp-fitbit-server/1.0";
 
 // Represents a single weight entry from the Fitbit Time Series API
 interface WeightTimeSeriesEntry {
@@ -14,65 +14,6 @@ interface WeightTimeSeriesEntry {
 interface WeightTimeSeriesResponse {
   'body-weight': WeightTimeSeriesEntry[]; // Array of weight entries
 }
-
-// --- Fitbit API Request Helper ---
-
-/**
- * Makes a generic request to the Fitbit API.
- * Handles adding the base URL, authorization header, and basic error handling.
- * @param endpoint The specific API endpoint path (e.g., '/body/weight/date/today/30d.json').
- * @param getAccessTokenFn A function that returns the current valid access token or null.
- * @returns A promise resolving to the parsed JSON response (type T) or null if the request fails.
- */
-async function makeFitbitRequest<T>(
-    endpoint: string,
-    getAccessTokenFn: () => string | null
-): Promise<T | null> {
-    const currentAccessToken = getAccessTokenFn();
-    if (!currentAccessToken) {
-        console.error("Error: No Fitbit Access Token available. Please authorize first.");
-        return null;
-    }
-
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
-    const url = `${FITBIT_API_BASE}/user/-/${cleanEndpoint}`;
-    console.error(`Attempting Fitbit API request to: ${url}`);
-
-    const headers = {
-        "User-Agent": USER_AGENT,
-        Authorization: `Bearer ${currentAccessToken}`,
-        Accept: "application/json",
-    };
-
-    try {
-        const response = await fetch(url, { headers });
-        if (!response.ok) {
-            const errorBody = await response.text();
-            console.error(`Fitbit API Error! Status: ${response.status}, URL: ${url}, Body: ${errorBody}`);
-            if (response.status === 401) {
-                console.error("Access token might be expired or invalid. Re-authorization may be needed.");
-            }
-            return null;
-        }
-        return (await response.json()) as T;
-    } catch (error) {
-        console.error(`Error making Fitbit request to ${url}:`, error);
-        return null;
-    }
-}
-
-// --- MCP Tool Response Structures ---
-
-// Defines the structure for text content within a tool response
-type TextContent = { type: "text"; text: string };
-
-// Defines the standard structure for a tool's response to the MCP client
-type ToolResponseStructure = {
-    content: TextContent[]; // Array containing response content (currently just text)
-    isError?: boolean;      // Optional flag indicating if the tool execution resulted in an error
-    _meta?: Record<string, unknown>; // Optional metadata
-    [key: string]: unknown; // Allows for extensibility
-};
 
 // --- Tool Registration ---
 

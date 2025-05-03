@@ -9,6 +9,8 @@ import { initializeAuth, startAuthorizationFlow, getAccessToken } from './auth.j
 // Import tool registration function(s)
 import { registerWeightTool } from './weight.js';
 import { registerSleepTool } from './sleep.js'; // Import the new sleep tool registration function
+// Import utilities
+import './utils.js';
 
 // Calculate the directory name of the current module (build/index.js)
 const __filename = fileURLToPath(import.meta.url);
