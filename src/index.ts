@@ -7,7 +7,8 @@ import { fileURLToPath } from 'url';
 // Import authentication functions
 import { initializeAuth, startAuthorizationFlow, getAccessToken } from './auth.js';
 // Import tool registration function(s)
-import { registerWeightTool } from './weight.js'; // Updated import
+import { registerWeightTool } from './weight.js';
+import { registerSleepTool } from './sleep.js'; // Import the new sleep tool registration function
 
 // Calculate the directory name of the current module (build/index.js)
 const __filename = fileURLToPath(import.meta.url);
@@ -33,7 +34,8 @@ const server = new McpServer({
 });
 
 // Register available tools with the MCP server
-registerWeightTool(server, getAccessToken); // Updated function call
+registerWeightTool(server, getAccessToken);
+registerSleepTool(server, getAccessToken); // Register the sleep tool
 
 // --- Main Application Entry Point ---
 async function main() {

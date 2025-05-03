@@ -14,11 +14,12 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
 
 *   **Weight:**
     *   `get_weight`: Retrieves raw weight data for a specified period (`1d`, `7d`, `30d`, `3m`, `6m`, `1y`) ending today. Requires a `period` parameter.
+*   **Sleep:**
+    *   `get_sleep_by_date_range`: Retrieves raw sleep log data for a specific date range (max 100 days). Requires `startDate` and `endDate` parameters in `YYYY-MM-DD` format.
 
 ### Planned Endpoints
 
 *   Steps
-*   Sleep
 *   Heart Rate
 *   Activity
 
@@ -76,6 +77,11 @@ Once the server is running and authorized, the following tools will be available
 *   `get_weight`: Fetches raw weight time series data as a JSON string for a specified period ending today.
     *   **Parameter:** `period` (string, required) - Specifies the duration. Must be one of: `"1d"`, `"7d"`, `"30d"`, `"3m"`, `"6m"`, `"1y"`.
     *   **Example Usage (Conceptual):** `get_weight(period="7d")`
+*   `get_sleep_by_date_range`: Fetches raw sleep log data as a JSON string for a specified date range (maximum 100 days).
+    *   **Parameters:**
+        *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
+        *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
+    *   **Example Usage (Conceptual):** `get_sleep_by_date_range(startDate="2025-04-01", endDate="2025-04-30")`
 
 ## Development
 
