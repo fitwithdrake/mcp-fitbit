@@ -77,39 +77,40 @@ export function registerWeightLast30DaysTool(
 ): void {
     server.tool(
         "get_weight_last_30_days", // Tool name
-        "Get all recorded weight entries from the last 30 days.", // Description
+        "Get the raw JSON response for weight entries from the last 30 days.", // Updated description
         {}, // No input parameters
         async (): Promise<ToolResponseStructure> => { // No arguments needed in callback
 
             const weightEndpoint = `/body/weight/date/today/30d.json`;
             const weightData = await makeFitbitRequest<WeightTimeSeriesResponse>(weightEndpoint, getAccessTokenFn);
 
+            // Handle API call failure (network error, 4xx/5xx status)
             if (!weightData) {
                 return {
-                    content: [{ type: "text", text: "Failed to retrieve weight data for the last 30 days. Ensure the access token is valid and has the required permissions." }],
-                    isError: true
+                    content: [{ type: "text", text: "Failed to retrieve weight data from Fitbit API. Check token and permissions." }],
+                    isError: true // Indicate an API error occurred
                 };
             }
 
+            // Check if the API call succeeded but returned no data
             const weightEntries = weightData['body-weight'] || [];
-
             if (weightEntries.length === 0) {
-                return { content: [{ type: "text", text: "No weight data found in the last 30 days." }] };
+                // Return a specific message indicating no data for the period, NOT an error
+                return {
+                    content: [{ type: "text", text: "No weight data found in the last 30 days." }]
+                    // isError is false/undefined by default
+                };
             }
 
-            // Format the raw data as simple text for the LLM
-            const formattedEntries = weightEntries.map(entry =>
-                `Date: ${entry.dateTime}, Weight: ${entry.value}`
-            ).join("\n"); // Use literal for newlines in the final text string
+            // If data exists, convert the raw JSON response object to a string
+            const rawJsonResponse = JSON.stringify(weightData, null, 2); // Pretty-print JSON
 
-            const responseText = `Weight entries from the last 30 days:\n\n${formattedEntries}`; // Use literal
-
-
+            // Return the raw JSON string
             return {
-                content: [{ type: "text", text: responseText }],
+                content: [{ type: "text", text: rawJsonResponse }],
             };
         }
     );
 
-    console.error("Registered Fitbit 'get_weight_last_30_days' tool.");
+    console.error("Registered Fitbit 'get_weight_last_30_days' tool (raw JSON output).");
 }
