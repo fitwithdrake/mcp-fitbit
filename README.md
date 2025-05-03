@@ -51,24 +51,48 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
     ```
     This compiles the TypeScript source files (`src/`) into JavaScript files (`build/`).
 
-## Running the Server
+## Integrating with Claude for Desktop
 
-1.  **Start the Server:**
-    ```bash
-    npm start
+To use this Fitbit MCP server with Claude for Desktop:
+
+1.  **Locate the Claude Configuration File:**
+    *   On Windows, open the file explorer and navigate to `%AppData%\Claude\`.
+    *   Open the `claude_desktop_config.json` file in a text editor.
+
+2.  **Add the Server Configuration:**
+    *   Find the `mcpServers` key in the JSON file (if it doesn't exist, you might need to add it).
+    *   Add an entry for the Fitbit server. Replace `C:\PATH\TO\PARENT\FOLDER\mcp-fitbit` with the **absolute path** to the directory where you cloned this repository.
+
+    ```json
+    {
+        "mcpServers": {
+            "fitbit": {
+                "command": "node",
+                "args": [
+                    "C:\\PATH\\TO\\PARENT\\FOLDER\\mcp-fitbit\\build\\index.js"
+                ]
+            }
+            // Add other servers here if you have them
+        }
+        // ... other Claude settings ...
+    }
     ```
-    This command executes the compiled JavaScript entry point (`build/index.js`).
 
-2.  **Authorization Flow:**
-    *   If this is the first time running the server or if the access token is missing/invalid, the server will automatically start the Fitbit OAuth 2.0 authorization flow.
-    *   It will print a message to the console indicating that authorization is needed and attempt to open `http://localhost:3000/auth` in your default web browser.
+    *   **Important:** Ensure you use double backslashes (`\\`) for paths on Windows in the JSON file.
+
+3.  **Save and Restart:**
+    *   Save the `claude_desktop_config.json` file.
+    *   Restart the Claude for Desktop application.
+
+4.  **First Run & Authorization:**
+    *   The first time Claude connects to the server (e.g., when you ask it a question that requires a Fitbit tool), the server will initiate the Fitbit OAuth 2.0 authorization flow.
+    *   A console window for the server might appear briefly.
+    *   The server will attempt to open `http://localhost:3000/auth` in your default web browser.
     *   If the browser doesn't open automatically, navigate to that URL manually.
-    *   Log in to your Fitbit account (if necessary) and grant the application permission (specifically for the requested scopes, e.g., 'weight').
+    *   Log in to your Fitbit account and grant the application permission for the requested scopes (Weight and Sleep).
     *   You will be redirected to `http://localhost:3000/callback`.
-    *   The server will exchange the authorization code for an access token.
     *   A success message will appear in the browser tab, which can then be closed.
-    *   The server logs will confirm that the token was received and the temporary auth server was shut down.
-    *   The MCP server is now authenticated and ready to handle tool calls from the LLM.
+    *   The server is now authenticated and Claude can use the Fitbit tools.
 
 ## Available Tools
 
@@ -87,4 +111,4 @@ Once the server is running and authorized, the following tools will be available
 
 *   Source code is located in the `src/` directory.
 *   Run `npm run build` after making changes to the TypeScript files.
-*   Run `npm start` to test the changes.
+*   Restart Claude for Desktop to ensure it picks up the latest build if the server was already running via Claude.
