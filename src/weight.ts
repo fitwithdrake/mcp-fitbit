@@ -69,36 +69,36 @@ type ToolResponseStructure = {
     [key: string]: unknown; // Allow other properties
 };
 
-
-// NEW Tool Registration Function
-export function registerWeightLast30DaysTool(
+// Generic function to create a weight tool for a specific period
+function createWeightTool(
     server: McpServer,
-    getAccessTokenFn: () => string | null
+    getAccessTokenFn: () => string | null,
+    days: 7 | 30 | 90 // Specify allowed day periods
 ): void {
+    const toolName = `get_weight_last_${days}_days`;
+    const description = `Get the raw JSON response for weight entries from the last ${days} days.`;
+    const endpoint = `/body/weight/date/today/${days}d.json`;
+
     server.tool(
-        "get_weight_last_30_days", // Tool name
-        "Get the raw JSON response for weight entries from the last 30 days.", // Updated description
+        toolName,
+        description,
         {}, // No input parameters
-        async (): Promise<ToolResponseStructure> => { // No arguments needed in callback
+        async (): Promise<ToolResponseStructure> => {
+            const weightData = await makeFitbitRequest<WeightTimeSeriesResponse>(endpoint, getAccessTokenFn);
 
-            const weightEndpoint = `/body/weight/date/today/30d.json`;
-            const weightData = await makeFitbitRequest<WeightTimeSeriesResponse>(weightEndpoint, getAccessTokenFn);
-
-            // Handle API call failure (network error, 4xx/5xx status)
+            // Handle API call failure
             if (!weightData) {
                 return {
-                    content: [{ type: "text", text: "Failed to retrieve weight data from Fitbit API. Check token and permissions." }],
-                    isError: true // Indicate an API error occurred
+                    content: [{ type: "text", text: `Failed to retrieve weight data from Fitbit API for the last ${days} days. Check token and permissions.` }],
+                    isError: true
                 };
             }
 
             // Check if the API call succeeded but returned no data
             const weightEntries = weightData['body-weight'] || [];
             if (weightEntries.length === 0) {
-                // Return a specific message indicating no data for the period, NOT an error
                 return {
-                    content: [{ type: "text", text: "No weight data found in the last 30 days." }]
-                    // isError is false/undefined by default
+                    content: [{ type: "text", text: `No weight data found in the last ${days} days.` }]
                 };
             }
 
@@ -112,5 +112,15 @@ export function registerWeightLast30DaysTool(
         }
     );
 
-    console.error("Registered Fitbit 'get_weight_last_30_days' tool (raw JSON output).");
+    console.error(`Registered Fitbit '${toolName}' tool (raw JSON output).`);
+}
+
+// Register the specific tools using the factory function
+export function registerWeightTools(
+    server: McpServer,
+    getAccessTokenFn: () => string | null
+): void {
+    createWeightTool(server, getAccessTokenFn, 7);
+    createWeightTool(server, getAccessTokenFn, 30);
+    createWeightTool(server, getAccessTokenFn, 90);
 }

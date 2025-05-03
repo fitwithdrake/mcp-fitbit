@@ -5,7 +5,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { initializeAuth, startAuthorizationFlow, getAccessToken } from './auth.js';
-import { registerWeightLast30DaysTool } from './weight.js';
+// Import the new factory registration function
+import { registerWeightTools } from './weight.js';
 
 // Calculate the directory name of the current module (build/index.js)
 const __filename = fileURLToPath(import.meta.url);
@@ -32,7 +33,8 @@ const server = new McpServer({
 });
 
 // Register tools from modules
-registerWeightLast30DaysTool(server, getAccessToken);
+// Use the new factory registration function
+registerWeightTools(server, getAccessToken);
 
 // --- Main Application Logic ---
 async function main() {
