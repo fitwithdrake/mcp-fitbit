@@ -1,11 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
 
-// --- Fitbit API Configuration ---
 const FITBIT_API_BASE = "https://api.fitbit.com/1";
-// User agent string for identifying requests to the Fitbit API
 const USER_AGENT = "mcp-fitbit-server/1.0";
-
-// --- Interfaces for Fitbit API Responses ---
 
 // Represents a single weight entry from the Fitbit Time Series API
 interface WeightTimeSeriesEntry {
@@ -80,70 +77,64 @@ type ToolResponseStructure = {
 // --- Tool Registration ---
 
 /**
- * Factory function to create and register a Fitbit weight tool for a specific time period.
+ * Registers a single, parameterized Fitbit weight tool with the MCP server.
  * @param server The McpServer instance.
  * @param getAccessTokenFn Function to retrieve the current access token.
- * @param days The number of past days (7, 30, or 90) for which to fetch weight data.
  */
-function createWeightTool(
+export function registerWeightTool(
     server: McpServer,
-    getAccessTokenFn: () => string | null,
-    days: 7 | 30 | 90
+    getAccessTokenFn: () => string | null
 ): void {
-    const toolName = `get_weight_last_${days}_days`;
-    const description = `Get the raw JSON response for weight entries from the last ${days} days.`;
-    const endpoint = `/body/weight/date/today/${days}d.json`;
+    const toolName = "get_weight";
+    const description = "Get the raw JSON response for weight entries from Fitbit for a specified period ending today. Requires a 'period' parameter such as '1d', '7d', '30d', '3m', '6m', '1y'";
+
+    // Define the schema shape using zod
+    const parametersSchemaShape = {
+        period: z.enum(["1d", "7d", "30d", "3m", "6m", "1y"])
+                 .describe("The time period for which to retrieve weight data."),
+    };
+
+    // Define the expected type for the validated parameters
+    type WeightParams = {
+        period: "1d" | "7d" | "30d" | "3m" | "6m" | "1y";
+    };
 
     server.tool(
         toolName,
         description,
-        {}, // This tool currently accepts no input parameters
-        async (): Promise<ToolResponseStructure> => {
+        parametersSchemaShape, // Pass the schema shape to the SDK for validation
+        // The SDK validates the input based on the schema and passes the
+        // validated parameters object (typed as WeightParams) to the callback.
+        async ({ period }: WeightParams): Promise<ToolResponseStructure> => {
+
+            // Construct the endpoint dynamically
+            const endpoint = `/body/weight/date/today/${period}.json`;
+
             const weightData = await makeFitbitRequest<WeightTimeSeriesResponse>(endpoint, getAccessTokenFn);
 
-            // Handle API call failure (network error, invalid token, etc.)
+            // Handle API call failure
             if (!weightData) {
                 return {
-                    content: [{ type: "text", text: `Failed to retrieve weight data from Fitbit API for the last ${days} days. Check token and permissions.` }],
+                    content: [{ type: "text", text: `Failed to retrieve weight data from Fitbit API for the period '${period}'. Check token and permissions.` }],
                     isError: true
                 };
             }
 
-            // Handle successful API call that returned no data for the period
+            // Handle no data found for the period
             const weightEntries = weightData['body-weight'] || [];
             if (weightEntries.length === 0) {
                 return {
-                    content: [{ type: "text", text: `No weight data found in the last ${days} days.` }]
-                    // isError defaults to false
+                    content: [{ type: "text", text: `No weight data found for the period '${period}'.` }]
                 };
             }
 
-            // If data exists, stringify the raw JSON response
-            const rawJsonResponse = JSON.stringify(weightData, null, 2); // Pretty-print for readability
-
-            // Return the raw JSON string as text content
+            // Return successful response with raw JSON
+            const rawJsonResponse = JSON.stringify(weightData, null, 2);
             return {
                 content: [{ type: "text", text: rawJsonResponse }],
             };
         }
     );
 
-    console.error(`Registered Fitbit '${toolName}' tool (raw JSON output).`);
-}
-
-/**
- * Registers all Fitbit weight tools with the MCP server.
- * Uses the createWeightTool factory function for different time periods.
- * @param server The McpServer instance.
- * @param getAccessTokenFn Function to retrieve the current access token.
- */
-export function registerWeightTools(
-    server: McpServer,
-    getAccessTokenFn: () => string | null
-): void {
-    createWeightTool(server, getAccessTokenFn, 7);
-    createWeightTool(server, getAccessTokenFn, 30);
-    // Note: The 90d endpoint might not be supported by Fitbit API based on previous logs.
-    // Consider removing or handling the specific error if 90d consistently fails.
-    createWeightTool(server, getAccessTokenFn, 90);
+    console.error(`Registered Fitbit '${toolName}' tool (raw JSON output, requires 'period' parameter).`);
 }

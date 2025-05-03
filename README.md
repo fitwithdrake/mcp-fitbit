@@ -13,9 +13,7 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
 ### Supported Endpoints
 
 *   **Weight:**
-    *   `get_weight_last_7_days`: Retrieves raw weight data for the past 7 days.
-    *   `get_weight_last_30_days`: Retrieves raw weight data for the past 30 days.
-    *   *(Note: A 90-day endpoint was attempted but is currently non-functional due to Fitbit API limitations (`Invalid time series period: 90d`).)*
+    *   `get_weight`: Retrieves raw weight data for a specified period (`1d`, `7d`, `30d`, `3m`, `6m`, `1y`) ending today. Requires a `period` parameter.
 
 ### Planned Endpoints
 
@@ -75,8 +73,9 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
 
 Once the server is running and authorized, the following tools will be available to the connected LLM:
 
-*   `get_weight_last_7_days`: Fetches raw weight time series data for the last 7 days as a JSON string.
-*   `get_weight_last_30_days`: Fetches raw weight time series data for the last 30 days as a JSON string.
+*   `get_weight`: Fetches raw weight time series data as a JSON string for a specified period ending today.
+    *   **Parameter:** `period` (string, required) - Specifies the duration. Must be one of: `"1d"`, `"7d"`, `"30d"`, `"3m"`, `"6m"`, `"1y"`.
+    *   **Example Usage (Conceptual):** `get_weight(period="7d")`
 
 ## Development
 

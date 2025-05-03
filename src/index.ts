@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 // Import authentication functions
 import { initializeAuth, startAuthorizationFlow, getAccessToken } from './auth.js';
 // Import tool registration function(s)
-import { registerWeightTools } from './weight.js';
+import { registerWeightTool } from './weight.js'; // Updated import
 
 // Calculate the directory name of the current module (build/index.js)
 const __filename = fileURLToPath(import.meta.url);
@@ -33,7 +33,7 @@ const server = new McpServer({
 });
 
 // Register available tools with the MCP server
-registerWeightTools(server, getAccessToken);
+registerWeightTool(server, getAccessToken); // Updated function call
 
 // --- Main Application Entry Point ---
 async function main() {
