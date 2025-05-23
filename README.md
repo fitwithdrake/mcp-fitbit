@@ -123,5 +123,9 @@ Once the server is running and authorized, the following tools will be available
 ## Development
 
 *   Source code is located in the `src/` directory.
-*   Run `npm run build` after making changes to the TypeScript files.
+*   **Available scripts:**
+    *   `npm run build` - Compile TypeScript to build/ directory
+    *   `npm run start` - Run the built MCP server
+    *   `npm run dev` - Build and run with MCP inspector for testing/debugging
+*   **Testing:** Use `npm run dev` to test tools interactively with the MCP inspector web UI at http://localhost:5173
 *   Restart Claude for Desktop to ensure it picks up the latest build if the server was already running via Claude.
