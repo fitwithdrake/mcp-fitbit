@@ -55,6 +55,32 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
     ```
     This compiles the TypeScript source files (`src/`) into JavaScript files (`build/`).
 
+## Quick Start Testing
+
+**🚀 Want to test the Fitbit tools quickly?**
+
+```bash
+npm run dev
+```
+
+This command builds the project and launches the **MCP Inspector** - a web-based testing interface at `http://localhost:5173`. The MCP Inspector allows you to:
+
+*   Test all Fitbit tools interactively in your browser
+*   View tool schemas and parameters
+*   Execute OAuth flow and see real API responses
+*   Debug tool behavior before integrating with Claude Desktop
+
+
+## Development
+
+*   **Source code:** Located in the `src/` directory
+*   **Available scripts:**
+    *   `npm run build` - Compile TypeScript to build/ directory
+    *   `npm run start` - Run the built MCP server
+    *   `npm run dev` - Build and run with MCP inspector for testing/debugging
+*   **Testing:** Use `npm run dev` to test tools interactively with the MCP inspector web UI at http://localhost:5173
+*   **Note:** Restart Claude for Desktop to pick up the latest build if the server was already running via Claude
+
 ## Integrating with Claude for Desktop
 
 To use this Fitbit MCP server with Claude for Desktop:
@@ -119,12 +145,3 @@ Once the server is running and authorized, the following tools will be available
         *   `limit` (number, optional) - Maximum number of activities to return (1-100, default: 20).
     *   **Example Usage (Conceptual):** `get_exercises(afterDate="2025-04-01", limit=30)`
 
-## Development
-
-*   Source code is located in the `src/` directory.
-*   **Available scripts:**
-    *   `npm run build` - Compile TypeScript to build/ directory
-    *   `npm run start` - Run the built MCP server
-    *   `npm run dev` - Build and run with MCP inspector for testing/debugging
-*   **Testing:** Use `npm run dev` to test tools interactively with the MCP inspector web UI at http://localhost:5173
-*   Restart Claude for Desktop to ensure it picks up the latest build if the server was already running via Claude.
