@@ -31,6 +31,7 @@ MCP server for Fitbit API integration providing health data access (weight, slee
 - Use makeFitbitRequest utility for API calls
 - **API Fidelity:** Tool parameters must exactly match Fitbit API requirements - no client-side workarounds or data filtering
 - **No Abstraction:** If Fitbit API only supports `afterDate`, the tool should only accept `afterDate` (not `startDate`/`endDate`)
+- **Documentation First:** Always check the official Fitbit API documentation at https://dev.fitbit.com/build/reference/ when adding new endpoints to ensure proper parameters, authentication scopes, and response formats
 
 ## Testing the Server
 **Development mode (with inspector):**
