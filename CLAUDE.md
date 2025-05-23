@@ -3,6 +3,8 @@
 ## Project Overview
 MCP server for Fitbit API integration providing health data access (weight, sleep, activities, profile).
 
+**Design Philosophy:** This MCP server acts as a 1:1 JSON proxy to the Fitbit API. Tools should match the underlying API parameters and limitations exactly, without adding abstraction layers or client-side data manipulation. Return raw JSON responses from Fitbit API calls.
+
 ## Development Commands
 - `npm run build` - Compile TypeScript to build/ directory
 - `npm run start` - Run the built MCP server
@@ -27,6 +29,8 @@ MCP server for Fitbit API integration providing health data access (weight, slee
 - All tools return raw JSON from Fitbit API
 - Error handling with console.error for debugging
 - Use makeFitbitRequest utility for API calls
+- **API Fidelity:** Tool parameters must exactly match Fitbit API requirements - no client-side workarounds or data filtering
+- **No Abstraction:** If Fitbit API only supports `afterDate`, the tool should only accept `afterDate` (not `startDate`/`endDate`)
 
 ## Testing the Server
 **Development mode (with inspector):**
