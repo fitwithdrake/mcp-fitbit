@@ -18,6 +18,8 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
     *   `get_sleep_by_date_range`: Retrieves raw sleep log data for a specific date range (max 100 days). Requires `startDate` and `endDate` parameters in `YYYY-MM-DD` format.
 *   **Profile:**
     *   `get_profile`: Retrieves the user's Fitbit profile information, including personal details such as name, age, gender, height, weight, and account information.
+*   **Activities/Exercises:**
+    *   `get_exercises`: Retrieves detailed exercise and activity logs for a specific date range. Requires `startDate` and `endDate` parameters in `YYYY-MM-DD` format, with an optional `limit` parameter (1-100, default: 20).
 
 ### Planned Endpoints
 
@@ -91,7 +93,7 @@ To use this Fitbit MCP server with Claude for Desktop:
     *   A console window for the server might appear briefly.
     *   The server will attempt to open `http://localhost:3000/auth` in your default web browser.
     *   If the browser doesn't open automatically, navigate to that URL manually.
-    *   Log in to your Fitbit account and grant the application permission for the requested scopes (Weight and Sleep).
+    *   Log in to your Fitbit account and grant the application permission for the requested scopes (Weight, Sleep, Profile, and Activity).
     *   You will be redirected to `http://localhost:3000/callback`.
     *   A success message will appear in the browser tab, which can then be closed.
     *   The server is now authenticated and Claude can use the Fitbit tools.
@@ -111,6 +113,12 @@ Once the server is running and authorized, the following tools will be available
 *   `get_profile`: Fetches the user's Fitbit profile information as a JSON string.
     *   **Parameters:** None required.
     *   **Example Usage (Conceptual):** `get_profile()`
+*   `get_exercises`: Fetches detailed exercise and activity logs as a JSON string for a specified date range.
+    *   **Parameters:**
+        *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
+        *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
+        *   `limit` (number, optional) - Maximum number of activities to return (1-100, default: 20).
+    *   **Example Usage (Conceptual):** `get_exercises(startDate="2025-04-01", endDate="2025-04-30", limit=30)`
 
 ## Development
 

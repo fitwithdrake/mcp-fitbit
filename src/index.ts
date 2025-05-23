@@ -10,6 +10,7 @@ import { initializeAuth, startAuthorizationFlow, getAccessToken } from './auth.j
 import { registerWeightTool } from './weight.js';
 import { registerSleepTool } from './sleep.js';
 import { registerProfileTool } from './profile.js';
+import { registerActivitiesTool } from './activities.js';
 // Import utilities
 import './utils.js';
 
@@ -40,6 +41,7 @@ const server = new McpServer({
 registerWeightTool(server, getAccessToken);
 registerSleepTool(server, getAccessToken);
 registerProfileTool(server, getAccessToken);
+registerActivitiesTool(server, getAccessToken);
 
 // --- Main Application Entry Point ---
 async function main() {
