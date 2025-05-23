@@ -19,7 +19,7 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
 *   **Profile:**
     *   `get_profile`: Retrieves the user's Fitbit profile information, including personal details such as name, age, gender, height, weight, and account information.
 *   **Activities/Exercises:**
-    *   `get_exercises`: Retrieves detailed exercise and activity logs for a specific date range. Requires `startDate` and `endDate` parameters in `YYYY-MM-DD` format, with an optional `limit` parameter (1-100, default: 20).
+    *   `get_exercises`: Retrieves detailed exercise and activity logs after a specific date. Requires `afterDate` parameter in `YYYY-MM-DD` format, with an optional `limit` parameter (1-100, default: 20).
 
 ### Planned Endpoints
 
@@ -113,12 +113,11 @@ Once the server is running and authorized, the following tools will be available
 *   `get_profile`: Fetches the user's Fitbit profile information as a JSON string.
     *   **Parameters:** None required.
     *   **Example Usage (Conceptual):** `get_profile()`
-*   `get_exercises`: Fetches detailed exercise and activity logs as a JSON string for a specified date range.
+*   `get_exercises`: Fetches detailed exercise and activity logs as a JSON string after a specified date.
     *   **Parameters:**
-        *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
-        *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
+        *   `afterDate` (string, required) - Specifies the date after which to retrieve activities in `YYYY-MM-DD` format.
         *   `limit` (number, optional) - Maximum number of activities to return (1-100, default: 20).
-    *   **Example Usage (Conceptual):** `get_exercises(startDate="2025-04-01", endDate="2025-04-30", limit=30)`
+    *   **Example Usage (Conceptual):** `get_exercises(afterDate="2025-04-01", limit=30)`
 
 ## Development
 

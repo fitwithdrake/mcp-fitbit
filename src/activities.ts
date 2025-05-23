@@ -122,15 +122,12 @@ export function registerActivitiesTool(
     getAccessTokenFn: () => string | null
 ): void {
     const toolName = "get_exercises";
-    const description = "Get the raw JSON response for exercise and activity logs from Fitbit for a specific date range. Requires 'startDate' and 'endDate' parameters in 'YYYY-MM-DD' format. Retrieves a detailed list of logged exercises and activities.";
+    const description = "Get the raw JSON response for exercise and activity logs from Fitbit after a specific date. Requires 'afterDate' parameter in 'YYYY-MM-DD' format. Retrieves a detailed list of logged exercises and activities.";
 
     const parametersSchemaShape = {
-        startDate: z.string()
-               .regex(/^\d{4}-\d{2}-\d{2}$/, "Start date must be in YYYY-MM-DD format.")
-               .describe("The start date for which to retrieve exercise data (YYYY-MM-DD)."),
-        endDate: z.string()
-               .regex(/^\d{4}-\d{2}-\d{2}$/, "End date must be in YYYY-MM-DD format.")
-               .describe("The end date for which to retrieve exercise data (YYYY-MM-DD)."),
+        afterDate: z.string()
+               .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format.")
+               .describe("Retrieve activities after this date (YYYY-MM-DD)."),
         limit: z.number()
                .min(1)
                .max(100)
@@ -139,8 +136,7 @@ export function registerActivitiesTool(
     };
 
     type ActivitiesParams = {
-        startDate: string;
-        endDate: string;
+        afterDate: string;
         limit?: number;
     };
 
@@ -148,10 +144,9 @@ export function registerActivitiesTool(
         toolName,
         description,
         parametersSchemaShape,
-        async ({ startDate, endDate, limit = 20 }: ActivitiesParams): Promise<ToolResponseStructure> => {
-            // Try a different URL structure that avoids the '/user/-/' prefix since
-            // the makeFitbitActivityRequest function will add it correctly
-            const endpoint = `activities/list.json?afterDate=${startDate}&beforeDate=${endDate}&sort=asc&offset=0&limit=${limit}`;
+        async ({ afterDate, limit = 20 }: ActivitiesParams): Promise<ToolResponseStructure> => {
+            // Use the correct Fitbit API endpoint structure - only afterDate is supported
+            const endpoint = `/user/-/activities/list.json?afterDate=${afterDate}&sort=asc&offset=0&limit=${limit}`;
             
             console.error(`DEBUG - Request endpoint: ${endpoint}`);
             
@@ -166,7 +161,7 @@ export function registerActivitiesTool(
                 return {
                     content: [{ 
                         type: "text", 
-                        text: `Failed to retrieve exercise data from Fitbit API for the date range '${startDate}' to '${endDate}'. ${errorDetails || 'Check API permissions and date format.'}` 
+                        text: `Failed to retrieve exercise data from Fitbit API after date '${afterDate}'. ${errorDetails || 'Check API permissions and date format.'}` 
                     }],
                     isError: true
                 };
@@ -176,7 +171,7 @@ export function registerActivitiesTool(
             const activityEntries = activitiesData.activities || [];
             if (activityEntries.length === 0) {
                 return {
-                    content: [{ type: "text", text: `No exercise data found for the date range '${startDate}' to '${endDate}'.` }]
+                    content: [{ type: "text", text: `No exercise data found after date '${afterDate}'.` }]
                 };
             }
 
@@ -188,5 +183,5 @@ export function registerActivitiesTool(
         }
     );
 
-    console.error(`Registered Fitbit '${toolName}' tool (raw JSON output, requires 'startDate', 'endDate', and optional 'limit' parameters).`);
+    console.error(`Registered Fitbit '${toolName}' tool (raw JSON output, requires 'afterDate' and optional 'limit' parameters).`);
 }
