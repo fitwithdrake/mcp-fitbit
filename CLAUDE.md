@@ -21,6 +21,7 @@ MCP server for Fitbit API integration providing health data access (weight, slee
 - `src/activities.ts` - Exercise/activity data tool (date range)
 - `src/profile.ts` - User profile tool
 - `src/heart-rate.ts` - Heart rate data tools (time series and date range)
+- `src/nutrition.ts` - Nutrition data tools (comprehensive food log with macros, plus time series for individual nutrients)
 - `build/` - Compiled JavaScript output
 - `.env` - Environment variables (FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET)
 
@@ -33,6 +34,7 @@ MCP server for Fitbit API integration providing health data access (weight, slee
 - **API Fidelity:** Tool parameters must exactly match Fitbit API requirements - no client-side workarounds or data filtering
 - **No Abstraction:** If Fitbit API only supports `afterDate`, the tool should only accept `afterDate` (not `startDate`/`endDate`)
 - **Documentation First:** Always check the official Fitbit API documentation at https://dev.fitbit.com/build/reference/ when adding new endpoints to ensure proper parameters, authentication scopes, and response formats
+- **CRITICAL: Endpoint URL Construction:** The `makeFitbitRequest` utility automatically adds `/user/-/` to all endpoint paths. When constructing endpoints, DO NOT include `user/-/` in the path - start directly with the resource path (e.g., `foods/log/caloriesIn/date/today/1d.json` NOT `user/-/foods/log/caloriesIn/date/today/1d.json`)
 
 ## Testing the Server
 **Development mode (with inspector):**
@@ -43,7 +45,7 @@ MCP server for Fitbit API integration providing health data access (weight, slee
 **Production mode:**
 1. `npm run build` - Compile TypeScript
 2. `npm run start` - Run server directly
-3. Tools available after auth: get_weight, get_sleep_by_date_range, get_exercises, get_profile, get_heart_rate, get_heart_rate_by_date_range
+3. Tools available after auth: get_weight, get_sleep_by_date_range, get_exercises, get_profile, get_heart_rate, get_heart_rate_by_date_range, get_food_log, get_nutrition, get_nutrition_by_date_range
 
 ## Environment Setup
 Requires `.env` file with:
@@ -57,4 +59,4 @@ FITBIT_CLIENT_SECRET=your_client_secret
 - Activities tool has custom request handler due to different URL structure
 - All dates in YYYY-MM-DD format
 - Token persisted to `.fitbit-token.json`
-- OAuth scopes: weight, sleep, profile, activity, heartrate
+- OAuth scopes: weight, sleep, profile, activity, heartrate, nutrition

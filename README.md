@@ -23,6 +23,10 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
 *   **Heart Rate:**
     *   `get_heart_rate`: Retrieves raw heart rate data for a specified period ending today or on a specific date. Requires a `period` parameter (`1d`, `7d`, `30d`, `1w`, `1m`) and optionally accepts a `date` parameter in `YYYY-MM-DD` format or `today` (default: `today`).
     *   `get_heart_rate_by_date_range`: Retrieves raw heart rate data for a specific date range (max 1 year). Requires `startDate` and `endDate` parameters in `YYYY-MM-DD` format.
+*   **Nutrition:**
+    *   `get_food_log`: Retrieves comprehensive nutrition data (calories, protein, carbs, fat, fiber, sodium) from Fitbit food log for a specific date. Returns daily summary totals and individual food entries with nutritional values.
+    *   `get_nutrition`: Retrieves raw nutrition data for individual nutrients for a specified period ending today or on a specific date. Requires `resource` parameter (`caloriesIn`, `water`, `protein`, `carbs`, `fat`, `fiber`, `sodium`) and `period` parameter (`1d`, `7d`, `30d`, `1w`, `1m`, `3m`, `6m`, `1y`), with optional `date` parameter.
+    *   `get_nutrition_by_date_range`: Retrieves raw nutrition data for individual nutrients for a specific date range (max 1,095 days). Requires `resource`, `startDate` and `endDate` parameters.
 
 ### Planned Endpoints
 
@@ -121,7 +125,7 @@ To use this Fitbit MCP server with Claude for Desktop:
     *   A console window for the server might appear briefly.
     *   The server will attempt to open `http://localhost:3000/auth` in your default web browser.
     *   If the browser doesn't open automatically, navigate to that URL manually.
-    *   Log in to your Fitbit account and grant the application permission for the requested scopes (Weight, Sleep, Profile, and Activity).
+    *   Log in to your Fitbit account and grant the application permission for the requested scopes (Weight, Sleep, Profile, Activity, Heart Rate, and Nutrition).
     *   You will be redirected to `http://localhost:3000/callback`.
     *   A success message will appear in the browser tab, which can then be closed.
     *   The server is now authenticated and Claude can use the Fitbit tools.
@@ -156,4 +160,20 @@ Once the server is running and authorized, the following tools will be available
         *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
         *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
     *   **Example Usage (Conceptual):** `get_heart_rate_by_date_range(startDate="2025-04-01", endDate="2025-04-30")`
+*   `get_food_log`: Fetches comprehensive nutrition data as a JSON string for a specific date, including daily summary totals and individual food entries.
+    *   **Parameters:**
+        *   `date` (string, optional) - Specifies the date in `YYYY-MM-DD` format or `"today"`. Defaults to `"today"`.
+    *   **Example Usage (Conceptual):** `get_food_log()` or `get_food_log(date="2025-04-15")`
+*   `get_nutrition`: Fetches raw nutrition data as a JSON string for a specified resource and period ending today or on a specific date.
+    *   **Parameters:**
+        *   `resource` (string, required) - Specifies the nutrition resource. Must be one of: `"caloriesIn"`, `"water"`, `"protein"`, `"carbs"`, `"fat"`, `"fiber"`, `"sodium"`.
+        *   `period` (string, required) - Specifies the duration. Must be one of: `"1d"`, `"7d"`, `"30d"`, `"1w"`, `"1m"`, `"3m"`, `"6m"`, `"1y"`.
+        *   `date` (string, optional) - Specifies the date in `YYYY-MM-DD` format or `"today"`. Defaults to `"today"`.
+    *   **Example Usage (Conceptual):** `get_nutrition(resource="protein", period="7d")` or `get_nutrition(resource="water", period="1d", date="2025-04-15")`
+*   `get_nutrition_by_date_range`: Fetches raw nutrition data as a JSON string for a specific resource and date range (maximum 1,095 days).
+    *   **Parameters:**
+        *   `resource` (string, required) - Specifies the nutrition resource. Must be one of: `"caloriesIn"`, `"water"`, `"protein"`, `"carbs"`, `"fat"`, `"fiber"`, `"sodium"`.
+        *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
+        *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
+    *   **Example Usage (Conceptual):** `get_nutrition_by_date_range(resource="protein", startDate="2025-04-01", endDate="2025-04-30")`
 
