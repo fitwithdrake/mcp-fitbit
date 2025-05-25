@@ -161,7 +161,7 @@ export interface ToolConfig {
   name: string;
   description: string;
   parametersSchema: Record<string, z.ZodTypeAny>;
-  handler: (params: any) => Promise<ToolResponseStructure>;
+  handler: (params: Record<string, unknown>) => Promise<ToolResponseStructure>;
 }
 
 export function registerTool(

@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import http from 'http';
 import open from 'open';
 import path from 'path';
-import { AuthorizationCode } from 'simple-oauth2';
+import { AuthorizationCode, Token } from 'simple-oauth2';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
@@ -11,7 +11,7 @@ import { FITBIT_OAUTH_CONFIG } from './config.js';
 
 // TypeScript interfaces for token data structures
 // The Token interface from simple-oauth2 uses this structure
-interface FitbitTokenData {
+interface FitbitTokenData extends Token {
   access_token: string;
   refresh_token: string;
   expires_in: number;
@@ -19,7 +19,24 @@ interface FitbitTokenData {
   scope: string;
   token_type: string;
   user_id: string;
-  [key: string]: unknown; // Add index signature for compatibility with simple-oauth2 Token type
+}
+
+interface FitbitOAuthErrorBody {
+  // Structure of the error object returned by Fitbit API.
+  // This is a placeholder. Update with specific fields if an example
+  // of a Fitbit API error response becomes available.
+  [key: string]: unknown;
+}
+
+interface FitbitOAuthError extends Error {
+  message: string;
+  response?: {
+    text: () => Promise<string>;
+    status?: number;
+    body?: FitbitOAuthErrorBody; // More specific body
+  };
+  // simple-oauth2 might add other properties like 'context'
+  context?: unknown; 
 }
 
 // Determine the directory of the current module (build/auth.js)
@@ -177,13 +194,15 @@ export function startAuthorizationFlow(): void {
       res.send(
         'Authorization successful! You can close this window. The MCP Server is now authenticated.'
       );
-    } catch (error: any) {
+    } catch (error: unknown) { 
       // Handle errors during token exchange
-      console.error('Error obtaining access token:', error.message || error);
-      if (error.response) {
+      const typedError = error as FitbitOAuthError; 
+      console.error('Error obtaining access token:', typedError.message || typedError);
+      if (typedError.response) {
         try {
-          const errorDetails = await error.response.text();
+          const errorDetails = await typedError.response.text();
           console.error('Error details:', errorDetails);
+          // Optionally parse errorDetails if it's JSON and log typedError.response.body
         } catch {
           console.error('Could not parse error response body.');
         }
@@ -243,6 +262,7 @@ export function startAuthorizationFlow(): void {
 export async function getAccessToken(): Promise<string | null> {
   // Return null if no token data exists
   if (!tokenData || !accessToken) {
+    console.error('No valid access token found.'); // Added missing console.error and fixed surrounding logic
     return null;
   }
 
@@ -251,7 +271,8 @@ export async function getAccessToken(): Promise<string | null> {
     console.error('Token is expired. Attempting to refresh...');
     try {
       // Create AccessToken instance from the current token data
-      const accessTokenObj = oauthClient.createToken(tokenData as any);
+      // FitbitTokenData is compatible with the 'Token' type expected by createToken
+      const accessTokenObj = oauthClient.createToken(tokenData);
 
       // Refresh the token
       if (accessTokenObj.expired()) {
@@ -295,7 +316,8 @@ export async function initializeAuth(): Promise<void> {
         console.error('Token is expired. Attempting to refresh...');
         try {
           // Create AccessToken instance from the loaded token data
-          const accessTokenObj = oauthClient.createToken(tokenData as any);
+          // FitbitTokenData is compatible with the 'Token' type expected by createToken
+          const accessTokenObj = oauthClient.createToken(tokenData);
 
           // Refresh the token
           if (accessTokenObj.expired()) {
@@ -306,19 +328,17 @@ export async function initializeAuth(): Promise<void> {
             // Save the refreshed token
             if (tokenData) {
               await saveTokenToFile(tokenData);
+              console.error('Refreshed token saved successfully.');
             }
-            console.error('Token refreshed and saved successfully.');
           }
         } catch (refreshError) {
-          console.error('Failed to refresh token:', refreshError);
+          console.error('Error refreshing token:', refreshError);
           accessToken = null;
           tokenData = null;
         }
       }
     } else {
-      console.error(
-        'No persisted access token found or token data is invalid.'
-      );
+      console.error('No valid access token found.');
     }
   } catch (error) {
     console.error('Error during token initialization:', error);
