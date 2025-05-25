@@ -1,9 +1,11 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
-import { makeFitbitRequest, ToolResponseStructure } from './utils.js';
-
-// Use API version 1.2 for sleep endpoints
-const FITBIT_API_BASE = 'https://api.fitbit.com/1.2';
+import { 
+  registerTool, 
+  CommonSchemas, 
+  handleFitbitApiCall,
+  type CommonParams 
+} from './utils.js';
+import { FITBIT_API_VERSIONS, VALIDATION_MESSAGES } from './config.js';
 
 // --- Fitbit API Response Interfaces for Sleep ---
 
@@ -79,77 +81,29 @@ export function registerSleepTool(
   server: McpServer,
   getAccessTokenFn: () => Promise<string | null>
 ): void {
-  const toolName = 'get_sleep_by_date_range';
-  const description =
-    "Get the raw JSON response for sleep logs from Fitbit for a specific date range. Requires 'startDate' and 'endDate' parameters in 'YYYY-MM-DD' format. Note: The API enforces a maximum range of 100 days.";
+  type SleepParams = Pick<CommonParams, 'startDate' | 'endDate'>;
 
-  const parametersSchemaShape = {
-    startDate: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Start date must be in YYYY-MM-DD format.')
-      .describe(
-        'The start date for which to retrieve sleep data (YYYY-MM-DD).'
-      ),
-    endDate: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, 'End date must be in YYYY-MM-DD format.')
-      .describe('The end date for which to retrieve sleep data (YYYY-MM-DD).'),
-  };
-
-  type SleepParams = {
-    startDate: string;
-    endDate: string;
-  };
-
-  server.tool(
-    toolName,
-    description,
-    parametersSchemaShape,
-    async ({
-      startDate,
-      endDate,
-    }: SleepParams): Promise<ToolResponseStructure> => {
-      // Construct the endpoint dynamically
+  registerTool(server, {
+    name: 'get_sleep_by_date_range',
+    description: `Get the raw JSON response for sleep logs from Fitbit for a specific date range. Requires 'startDate' and 'endDate' parameters in 'YYYY-MM-DD' format. ${VALIDATION_MESSAGES.MAX_RANGE_100_DAYS}.`,
+    parametersSchema: {
+      startDate: CommonSchemas.startDate,
+      endDate: CommonSchemas.endDate,
+    },
+    handler: async ({ startDate, endDate }: SleepParams) => {
       const endpoint = `/sleep/date/${startDate}/${endDate}.json`;
-
-      // Make the request
-      const sleepData = await makeFitbitRequest<SleepLogRangeResponse>(
+      
+      return handleFitbitApiCall<SleepLogRangeResponse, SleepParams>(
         endpoint,
+        { startDate, endDate },
         getAccessTokenFn,
-        FITBIT_API_BASE
+        {
+          apiBase: FITBIT_API_VERSIONS.V1_2,
+          successDataExtractor: (data) => data.sleep || [],
+          noDataMessage: `the date range '${startDate}' to '${endDate}'`,
+          errorContext: `date range '${startDate}' to '${endDate}'`
+        }
       );
-
-      // Handle API call failure
-      if (!sleepData) {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Failed to retrieve sleep data from Fitbit API for the date range '${startDate}' to '${endDate}'. Check token, permissions, date format, and ensure the range is 100 days or less.`,
-            },
-          ],
-          isError: true,
-        };
-      }
-
-      // Handle no data found
-      const sleepEntries = sleepData.sleep || [];
-      if (sleepEntries.length === 0) {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `No sleep data found for the date range '${startDate}' to '${endDate}'.`,
-            },
-          ],
-        };
-      }
-
-      // Return successful response
-      const rawJsonResponse = JSON.stringify(sleepData, null, 2);
-      return {
-        content: [{ type: 'text', text: rawJsonResponse }],
-      };
     }
-  );
+  });
 }

@@ -1,6 +1,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
-import { makeFitbitRequest, ToolResponseStructure } from './utils.js';
+import { 
+  registerTool, 
+  CommonSchemas, 
+  handleFitbitApiCall,
+  type CommonParams 
+} from './utils.js';
 
 // Represents a single weight entry from the Fitbit Time Series API
 interface WeightTimeSeriesEntry {
@@ -24,68 +28,27 @@ export function registerWeightTool(
   server: McpServer,
   getAccessTokenFn: () => Promise<string | null>
 ): void {
-  const toolName = 'get_weight';
-  const description =
-    "Get the raw JSON response for weight entries from Fitbit for a specified period ending today. Requires a 'period' parameter such as '1d', '7d', '30d', '3m', '6m', '1y'";
+  type WeightParams = Pick<CommonParams, 'period'>;
 
-  // Define the schema shape using zod
-  const parametersSchemaShape = {
-    period: z
-      .enum(['1d', '7d', '30d', '3m', '6m', '1y'])
-      .describe('The time period for which to retrieve weight data.'),
-  };
-
-  // Define the expected type for the validated parameters
-  type WeightParams = {
-    period: '1d' | '7d' | '30d' | '3m' | '6m' | '1y';
-  };
-
-  server.tool(
-    toolName,
-    description,
-    parametersSchemaShape, // Pass the schema shape to the SDK for validation
-    // The SDK validates the input based on the schema and passes the
-    // validated parameters object (typed as WeightParams) to the callback.
-    async ({ period }: WeightParams): Promise<ToolResponseStructure> => {
-      // Construct the endpoint dynamically
+  registerTool(server, {
+    name: 'get_weight',
+    description: "Get the raw JSON response for weight entries from Fitbit for a specified period ending today. Requires a 'period' parameter such as '1d', '7d', '30d', '3m', '6m', '1y'",
+    parametersSchema: {
+      period: CommonSchemas.period,
+    },
+    handler: async ({ period }: WeightParams) => {
       const endpoint = `/body/weight/date/today/${period}.json`;
-
-      const weightData = await makeFitbitRequest<WeightTimeSeriesResponse>(
+      
+      return handleFitbitApiCall<WeightTimeSeriesResponse, WeightParams>(
         endpoint,
-        getAccessTokenFn
+        { period },
+        getAccessTokenFn,
+        {
+          successDataExtractor: (data) => data['body-weight'] || [],
+          noDataMessage: `the period '${period}'`,
+          errorContext: `period '${period}'`
+        }
       );
-
-      // Handle API call failure
-      if (!weightData) {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Failed to retrieve weight data from Fitbit API for the period '${period}'. Check token and permissions.`,
-            },
-          ],
-          isError: true,
-        };
-      }
-
-      // Handle no data found for the period
-      const weightEntries = weightData['body-weight'] || [];
-      if (weightEntries.length === 0) {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `No weight data found for the period '${period}'.`,
-            },
-          ],
-        };
-      }
-
-      // Return successful response with raw JSON
-      const rawJsonResponse = JSON.stringify(weightData, null, 2);
-      return {
-        content: [{ type: 'text', text: rawJsonResponse }],
-      };
     }
-  );
+  });
 }
