@@ -120,7 +120,6 @@ export function registerNutritionTools(
         }
     );
 
-    console.error(`Registered Fitbit '${foodLogToolName}' tool (comprehensive nutrition data including macros).`);
     
     // --- Nutrition by Date/Period Tool ---
     
@@ -184,7 +183,6 @@ export function registerNutritionTools(
         }
     );
 
-    console.error(`Registered Fitbit '${periodToolName}' tool (raw JSON output, requires 'resource' and 'period' parameters, optional 'date' parameter).`);
 
     // --- Nutrition by Date Range Tool ---
     
@@ -249,5 +247,4 @@ export function registerNutritionTools(
         }
     );
 
-    console.error(`Registered Fitbit '${rangeToolName}' tool (raw JSON output, requires 'resource', 'startDate' and 'endDate' parameters).`);
 }

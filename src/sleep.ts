@@ -145,5 +145,4 @@ export function registerSleepTool(
         }
     );
 
-    console.error(`Registered Fitbit '${toolName}' tool (raw JSON output, requires 'startDate' and 'endDate' parameters).`);
 }

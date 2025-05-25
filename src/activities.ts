@@ -133,5 +133,4 @@ export function registerActivitiesTool(
         }
     );
 
-    console.error(`Registered Fitbit '${toolName}' tool (raw JSON output, requires 'afterDate' and optional 'limit' parameters).`);
 }

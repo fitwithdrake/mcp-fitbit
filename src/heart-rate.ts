@@ -102,7 +102,6 @@ export function registerHeartRateTools(
         }
     );
 
-    console.error(`Registered Fitbit '${periodToolName}' tool (raw JSON output, requires 'period' parameter, optional 'date' parameter).`);
 
     // --- Heart Rate by Date Range Tool ---
     
@@ -163,5 +162,4 @@ export function registerHeartRateTools(
         }
     );
 
-    console.error(`Registered Fitbit '${rangeToolName}' tool (raw JSON output, requires 'startDate' and 'endDate' parameters).`);
 }

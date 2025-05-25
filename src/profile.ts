@@ -63,5 +63,4 @@ export function registerProfileTool(
     }
   );
 
-  console.error(`Registered Fitbit '${toolName}' tool (raw JSON output).`);
 }

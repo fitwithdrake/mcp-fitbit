@@ -77,5 +77,4 @@ export function registerWeightTool(
         }
     );
 
-    console.error(`Registered Fitbit '${toolName}' tool (raw JSON output, requires 'period' parameter).`);
 }
