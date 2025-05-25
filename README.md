@@ -18,10 +18,14 @@ Give your AI assistant access to your Fitbit data for personalized health insigh
 
 **🚀 Want to test the tools right away?**
 
+1. [Get Fitbit API credentials](https://dev.fitbit.com/) (see Installation below)
+2. Then run:
+
 ```bash
 git clone https://github.com/TheDigitalNinja/mcp-fitbit
 cd mcp-fitbit
 npm install
+# Create .env with your Fitbit credentials
 npm run dev
 ```
 
