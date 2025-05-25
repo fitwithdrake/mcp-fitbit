@@ -29,13 +29,32 @@ const __dirname = path.dirname(__filename);
 const envPath = path.resolve(__dirname, '..', '.env');
 dotenv.config({ path: envPath });
 
-// Log environment variable loading status for debugging
-console.error(
-  `[index.ts] After dotenv load: FITBIT_CLIENT_ID=${process.env.FITBIT_CLIENT_ID ? 'Loaded' : 'MISSING'}`
-);
-console.error(
-  `[index.ts] After dotenv load: FITBIT_CLIENT_SECRET=${process.env.FITBIT_CLIENT_SECRET ? 'Loaded' : 'MISSING'}`
-);
+// Validate required environment variables
+function validateEnvironment(): void {
+  const requiredVars = {
+    FITBIT_CLIENT_ID: process.env.FITBIT_CLIENT_ID,
+    FITBIT_CLIENT_SECRET: process.env.FITBIT_CLIENT_SECRET,
+  };
+
+  const missingVars = Object.entries(requiredVars)
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
+
+  if (missingVars.length > 0) {
+    console.error('Missing required environment variables:');
+    missingVars.forEach(varName => {
+      console.error(`   - ${varName}`);
+    });
+    console.error('Please create a .env file in the project root. See README.md');
+    process.exit(1);
+  }
+}
+
+// Validate environment before proceeding
+validateEnvironment();
+
+// Log successful environment loading
+console.error('✅ Environment variables loaded successfully');
 
 // Create the main MCP server instance
 const server = new McpServer({
