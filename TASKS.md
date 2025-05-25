@@ -54,35 +54,39 @@ This document outlines identified improvements and refactoring opportunities for
 
 ## Medium Priority Improvements
 
-### 4. **Code Duplication & Patterns**
+### 4. **~~Code Duplication & Patterns~~** ✅ **COMPLETED**
 **Priority: Medium | Effort: High**
 
 **Problem:** Tool registration follows repetitive patterns that could be abstracted. Similar error handling logic repeated across all tool files.
 
 **Solution:**
-- Create a base tool registration helper function
-- Abstract common parameter validation patterns
-- Standardize tool response formatting
+- ✅ Create a base tool registration helper function
+- ✅ Abstract common parameter validation patterns
+- ✅ Standardize tool response formatting
 
-**Files to modify:**
-- `src/utils.ts` - Add tool registration helpers
-- All tool files (`src/weight.ts`, `src/sleep.ts`, etc.) - Use new helpers
+**Files modified:**
+- ✅ `src/utils.ts` - Added `registerTool()` helper, `CommonSchemas`, and `handleFitbitApiCall()`
+- ✅ All tool files (`src/weight.ts`, `src/sleep.ts`, `src/activities.ts`, `src/profile.ts`) - Use new helpers
 
-### 5. **Constants Management**
+**Completion Notes:** Successfully created reusable tool registration patterns that eliminated ~200+ lines of duplicated code. Added `registerTool()` helper function, standardized parameter validation with `CommonSchemas`, and created `handleFitbitApiCall()` for consistent API handling. Tool names kept inline for better readability during demos.
+
+### 5. **~~Constants Management~~** ✅ **COMPLETED**
 **Priority: Medium | Effort: Low**
 
 **Problem:** API base URLs scattered across files (`utils.ts:29`, `weight.ts:5`, `sleep.ts:6`, etc.).
 
 **Solution:**
-- Create a centralized config file for all constants
-- Define API base URLs, scopes, and other constants in one place
-- Import constants from centralized location
+- ✅ Create a centralized config file for all constants
+- ✅ Define API base URLs, scopes, and other constants in one place
+- ✅ Import constants from centralized location
 
-**Files to create:**
-- `src/config.ts` - Centralized constants
+**Files created:**
+- ✅ `src/config.ts` - Centralized constants for API URLs, validation messages, common types
 
-**Files to modify:**
-- All tool files - Import constants from config
+**Files modified:**
+- ✅ All tool files - Import constants from config (API base URLs, validation messages)
+
+**Completion Notes:** Successfully centralized all scattered constants into `src/config.ts`. Includes API base URLs, OAuth config, validation messages, common parameter types, and error messages. All tool files now import from centralized config for consistency.
 
 ### 6. **Error Handling Standardization**
 **Priority: Medium | Effort: Medium**

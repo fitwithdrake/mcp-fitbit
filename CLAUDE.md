@@ -69,7 +69,7 @@ When working on this codebase:
 2. Update relevant documentation 
 3. Test changes thoroughly with the MCP inspector
 4. Ensure backward compatibility with existing tools
-5. **VERY IMPORTANT:** When you have completed a task, you MUST run the lint commands (`npm run lint`) with Bash to ensure your code is correct
+5. **VERY IMPORTANT:** When you have completed a task, you MUST run both build and lint commands (`npm run build` and `npm run lint`) with Bash to ensure your code is correct
 6. Update documentation when making changes
 
 **For identified improvement opportunities, see [TASKS.md](TASKS.md)** - this file contains a comprehensive analysis of refactoring opportunities, code quality improvements, and architectural enhancements prioritized by impact and effort.
