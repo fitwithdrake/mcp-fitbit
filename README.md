@@ -57,6 +57,9 @@ This opens the **MCP Inspector** at `http://localhost:5173` where you can test a
 | `get_sleep_by_date_range` | Sleep logs for date range (max 100 days) | `startDate`, `endDate` (YYYY-MM-DD) |
 | `get_exercises` | Activity/exercise logs after date | `afterDate` (YYYY-MM-DD), `limit` (1-100) |
 | `get_daily_activity_summary` | Daily activity summary with goals | `date` (YYYY-MM-DD) |
+| `get_activity_goals` | User's activity goals (daily/weekly) | `period`: `daily`, `weekly` |
+| `get_activity_timeseries` | Activity time series data (max 30 days) | `resourcePath`, `startDate`, `endDate` (YYYY-MM-DD) |
+| `get_azm_timeseries` | Active Zone Minutes time series (max 1095 days) | `startDate`, `endDate` (YYYY-MM-DD) |
 | `get_heart_rate` | Heart rate for time period | `period`: `1d`, `7d`, `30d`, `1w`, `1m`, optional `date` |
 | `get_heart_rate_by_date_range` | Heart rate for date range (max 1 year) | `startDate`, `endDate` (YYYY-MM-DD) |
 | `get_food_log` | Complete nutrition data for a day | `date` (YYYY-MM-DD or "today") |
@@ -65,6 +68,8 @@ This opens the **MCP Inspector** at `http://localhost:5173` where you can test a
 | `get_profile` | User profile information | None |
 
 **Nutrition resources:** `caloriesIn`, `water`, `protein`, `carbs`, `fat`, `fiber`, `sodium`
+
+**Activity time series resources:** `steps`, `distance`, `calories`, `activityCalories`, `caloriesBMR`, `tracker/activityCalories`, `tracker/calories`, `tracker/distance`
 
 ### Claude Desktop
 

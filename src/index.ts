@@ -18,6 +18,9 @@ import { registerActivitiesTool } from './activities.js';
 import { registerHeartRateTools } from './heart-rate.js';
 import { registerNutritionTools } from './nutrition.js';
 import { registerDailyActivityTool } from './daily-activity.js';
+import { registerActivityGoalsTool } from './activity-goals.js';
+import { registerActivityTimeSeriesTool } from './activity-timeseries.js';
+import { registerAzmTimeSeriesTool } from './azm-timeseries.js';
 // Import utilities
 import './utils.js';
 
@@ -75,6 +78,9 @@ registerActivitiesTool(server, getAccessToken);
 registerHeartRateTools(server, getAccessToken);
 registerNutritionTools(server, getAccessToken);
 registerDailyActivityTool(server, getAccessToken);
+registerActivityGoalsTool(server, getAccessToken);
+registerActivityTimeSeriesTool(server, getAccessToken);
+registerAzmTimeSeriesTool(server, getAccessToken);
 
 // --- Main Application Entry Point ---
 async function main() {

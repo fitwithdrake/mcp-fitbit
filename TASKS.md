@@ -24,7 +24,7 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 - ✅ Tool follows 1:1 proxy pattern with proper error handling
 
 ### 2. **Implement Activity Goals Tool**
-**Priority: Medium | Effort: Low-Medium | Status: To Do**
+**Priority: Medium | Effort: Low-Medium | Status: ✅ Completed**
 
 **Problem:** The server cannot currently retrieve the user's defined activity goals.
 **Why needed:** Understanding user goals (e.g., daily steps, weekly active minutes) is crucial context for evaluating their activity data and answering questions about performance.
@@ -35,13 +35,15 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 - Define TypeScript interfaces for the API response (e.g., `ActivityGoalsResponse`, `GoalsData`).
 - Register the new tool in `src/index.ts`.
 - Ensure the `activity` OAuth scope is requested.
-**Files to modify:**
-- `src/index.ts` (for tool registration and import)
-- Create `src/activity_goals.ts` (or add to an existing relevant file like `src/activities.ts` if deemed appropriate, though a new file might be cleaner)
-- `TASKS.md` (to update status upon completion)
+**Implementation completed:**
+- ✅ Created `src/activity-goals.ts` with `get_activity_goals` tool
+- ✅ Registered tool in `src/index.ts`
+- ✅ Updated documentation in README.md and CLAUDE.md
+- ✅ Supports both daily and weekly goal periods
+- ✅ TypeScript interfaces for complete API response structure
 
 ### 3. **Implement Activity Time Series Tool**
-**Priority: High | Effort: Medium | Status: To Do**
+**Priority: High | Effort: Medium | Status: ✅ Completed**
 
 **Problem:** No tool to fetch time series data for overall daily activity metrics (e.g., total steps, distance, calories burned per day). The existing `get_exercises` tool lists logged activities but doesn't provide daily aggregate trends.
 **Why needed:** Essential for answering user questions like "how was my week?" by showing trends in key activity metrics over a specified period.
@@ -52,13 +54,15 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 - Define TypeScript interfaces for the API response (e.g., `ActivityTimeSeriesResponse`, `TimeSeriesDataPoint`).
 - Register the new tool in `src/index.ts`.
 - Ensure the `activity` OAuth scope is requested.
-**Files to modify:**
-- `src/index.ts` (for tool registration and import)
-- Create `src/activity_timeseries.ts` (or a similar name)
-- `TASKS.md` (to update status upon completion)
+**Implementation completed:**
+- ✅ Created `src/activity-timeseries.ts` with `get_activity_timeseries` tool
+- ✅ Registered tool in `src/index.ts`
+- ✅ Updated documentation in README.md and CLAUDE.md
+- ✅ Supports all major activity resources (steps, distance, calories, etc.)
+- ✅ Max 30-day date range as per API limitations
 
 ### 4. **Implement Active Zone Minutes (AZM) Time Series Tool**
-**Priority: Medium | Effort: Low-Medium | Status: To Do**
+**Priority: Medium | Effort: Low-Medium | Status: ✅ Completed**
 
 **Problem:** No dedicated tool to track Active Zone Minutes (AZM) trends over time. While individual activities might contain AZM data, a specific time series for daily total AZM is missing.
 **Why needed:** AZM is a key health and activity metric promoted by Fitbit. Providing a tool to track its trends is valuable for users monitoring their fitness.
@@ -69,15 +73,17 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 - Define TypeScript interfaces for the API response (e.g., `AzmTimeSeriesResponse`, `AzmDataPoint`).
 - Register the new tool in `src/index.ts`.
 - Ensure the `activity` OAuth scope is requested (Fitbit documentation confirms `activity` scope for AZM time series).
-**Files to modify:**
-- `src/index.ts` (for tool registration and import)
-- Add to `src/activity_timeseries.ts` (if created for task #4 and seems appropriate) or create a dedicated `src/azm.ts`.
-- `TASKS.md` (to update status upon completion)
+**Implementation completed:**
+- ✅ Created `src/azm-timeseries.ts` with `get_azm_timeseries` tool
+- ✅ Registered tool in `src/index.ts`
+- ✅ Updated documentation in README.md and CLAUDE.md
+- ✅ Returns total AZM plus breakdown by zone types
+- ✅ Max 1095-day date range as per API limitations
 
 ## Implementation Recommendation
 
-**Recommended Action:** 
-1. Prioritize the implementation of the new Fitbit API tools (Tasks #1, #2, #3, #4) as they directly enhance the server's capability to answer common user queries about their activity and well-being.
+**Status:** 
+✅ **All priority tasks completed!** All four high-value Fitbit API tools have been successfully implemented, enhancing the server's capability to answer comprehensive user queries about their activity and well-being.
 
 ## Design Philosophy Reminder
 
