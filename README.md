@@ -86,6 +86,7 @@ This command builds the project and launches the **MCP Inspector** - a web-based
     *   `npm run dev` - Build and run with MCP inspector for testing/debugging
 *   **Testing:** Use `npm run dev` to test tools interactively with the MCP inspector web UI at http://localhost:5173
 *   **Note:** Restart Claude for Desktop to pick up the latest build if the server was already running via Claude
+*   **Improvements:** See [TASKS.md](TASKS.md) for identified improvements and refactoring opportunities
 
 ## Integrating with Claude for Desktop
 

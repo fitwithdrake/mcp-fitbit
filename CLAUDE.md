@@ -60,3 +60,14 @@ FITBIT_CLIENT_SECRET=your_client_secret
 - All dates in YYYY-MM-DD format
 - Token persisted to `.fitbit-token.json`
 - OAuth scopes: weight, sleep, profile, activity, heartrate, nutrition
+
+## Contributing & Improvements
+
+When working on this codebase:
+1. Follow the existing code style and patterns
+2. Update relevant documentation 
+3. Test changes thoroughly with the MCP inspector
+4. Ensure backward compatibility with existing tools
+5. Update documentation when making changes
+
+**For identified improvement opportunities, see [TASKS.md](TASKS.md)** - this file contains a comprehensive analysis of refactoring opportunities, code quality improvements, and architectural enhancements prioritized by impact and effort.
