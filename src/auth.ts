@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import http from 'http';
 import open from 'open';
 import path from 'path';
-import { AuthorizationCode, AccessToken } from 'simple-oauth2';
+import { AuthorizationCode } from 'simple-oauth2';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
@@ -183,7 +183,7 @@ export function startAuthorizationFlow(): void {
         try {
           const errorDetails = await error.response.text();
           console.error('Error details:', errorDetails);
-        } catch (parseError) {
+        } catch {
           console.error('Could not parse error response body.');
         }
       }

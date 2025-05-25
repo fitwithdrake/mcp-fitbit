@@ -1,5 +1,4 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
 import { makeFitbitRequest, ToolResponseStructure } from './utils.js';
 
 const FITBIT_API_BASE = 'https://api.fitbit.com/1';

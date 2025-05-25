@@ -2,8 +2,6 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { makeFitbitRequest, ToolResponseStructure } from './utils.js';
 
-const FITBIT_API_BASE = 'https://api.fitbit.com/1';
-
 // Represents a single weight entry from the Fitbit Time Series API
 interface WeightTimeSeriesEntry {
   dateTime: string; // Date (and potentially time) of the entry

@@ -60,15 +60,6 @@ interface SleepLogEntry {
   isMainSleep: boolean;
 }
 
-// Represents the overall structure of the response from the Fitbit Sleep API by date
-interface SleepLogResponse {
-  sleep: SleepLogEntry[]; // Array of sleep log entries for the requested date
-  summary: {
-    totalMinutesAsleep: number;
-    totalSleepRecords: number;
-    totalTimeInBed: number;
-  };
-}
 
 // Represents the overall structure of the response from the Fitbit Sleep API by date range
 interface SleepLogRangeResponse {
