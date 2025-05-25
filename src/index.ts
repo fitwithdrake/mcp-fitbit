@@ -17,6 +17,7 @@ import { registerProfileTool } from './profile.js';
 import { registerActivitiesTool } from './activities.js';
 import { registerHeartRateTools } from './heart-rate.js';
 import { registerNutritionTools } from './nutrition.js';
+import { registerDailyActivityTool } from './daily-activity.js';
 // Import utilities
 import './utils.js';
 
@@ -73,6 +74,7 @@ registerProfileTool(server, getAccessToken);
 registerActivitiesTool(server, getAccessToken);
 registerHeartRateTools(server, getAccessToken);
 registerNutritionTools(server, getAccessToken);
+registerDailyActivityTool(server, getAccessToken);
 
 // --- Main Application Entry Point ---
 async function main() {

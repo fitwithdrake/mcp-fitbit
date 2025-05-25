@@ -56,6 +56,7 @@ This opens the **MCP Inspector** at `http://localhost:5173` where you can test a
 | `get_weight` | Weight data over time periods | `period`: `1d`, `7d`, `30d`, `3m`, `6m`, `1y` |
 | `get_sleep_by_date_range` | Sleep logs for date range (max 100 days) | `startDate`, `endDate` (YYYY-MM-DD) |
 | `get_exercises` | Activity/exercise logs after date | `afterDate` (YYYY-MM-DD), `limit` (1-100) |
+| `get_daily_activity_summary` | Daily activity summary with goals | `date` (YYYY-MM-DD) |
 | `get_heart_rate` | Heart rate for time period | `period`: `1d`, `7d`, `30d`, `1w`, `1m`, optional `date` |
 | `get_heart_rate_by_date_range` | Heart rate for date range (max 1 year) | `startDate`, `endDate` (YYYY-MM-DD) |
 | `get_food_log` | Complete nutrition data for a day | `date` (YYYY-MM-DD or "today") |

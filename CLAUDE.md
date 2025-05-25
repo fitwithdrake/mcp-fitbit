@@ -23,6 +23,7 @@ MCP server for Fitbit API integration providing health data access (weight, slee
 - `src/profile.ts` - User profile tool
 - `src/heart-rate.ts` - Heart rate data tools (time series and date range)
 - `src/nutrition.ts` - Nutrition data tools (comprehensive food log with macros, plus time series for individual nutrients)
+- `src/daily-activity.ts` - Daily activity summary tool (steps, calories, goals, heart rate zones)
 - `build/` - Compiled JavaScript output
 - `.env` - Environment variables (FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET)
 
@@ -46,7 +47,7 @@ MCP server for Fitbit API integration providing health data access (weight, slee
 **Production mode:**
 1. `npm run build` - Compile TypeScript
 2. `npm run start` - Run server directly
-3. Tools available after auth: get_weight, get_sleep_by_date_range, get_exercises, get_profile, get_heart_rate, get_heart_rate_by_date_range, get_food_log, get_nutrition, get_nutrition_by_date_range
+3. Tools available after auth: get_weight, get_sleep_by_date_range, get_exercises, get_daily_activity_summary, get_profile, get_heart_rate, get_heart_rate_by_date_range, get_food_log, get_nutrition, get_nutrition_by_date_range
 
 ## Environment Setup
 Requires `.env` file with:
