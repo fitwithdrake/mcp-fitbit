@@ -1,7 +1,7 @@
 # Fitbit MCP Server
 > Connect AI assistants to your Fitbit health data
 
-Give your AI assistant access to your Fitbit data for personalized health insights, trend analysis, and automated tracking. Works with Claude, ChatGPT, Gemini, and other MCP-compatible AI tools.
+Give your AI assistant access to your Fitbit data for personalized health insights, trend analysis, and automated tracking. Works with Claude Desktop and other MCP-compatible AI tools.
 
 ## What it does
 
