@@ -161,7 +161,9 @@ export interface ToolConfig {
   name: string;
   description: string;
   parametersSchema: Record<string, z.ZodTypeAny>;
-  handler: (params: Record<string, unknown>) => Promise<ToolResponseStructure>;
+  // Using 'any' here is necessary because different handlers expect different parameter types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handler: (params: any) => Promise<ToolResponseStructure>;
 }
 
 export function registerTool(

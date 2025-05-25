@@ -4,22 +4,7 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 
 ## Remaining Tasks & New Feature Implementation
 
-### 1. **Minor Type Safety Cleanup**
-**Priority: Low | Effort: Low | Status: OPTIONAL**
-
-**Problem:** 4 ESLint warnings about remaining `any` types in `auth.ts` and `utils.ts`.
-
-**Why needed:** Complete the type safety work for consistency.
-
-**Solution:**
-- Replace remaining `any` types with proper interfaces
-- Should be straightforward given existing patterns
-
-**Files to modify:**
-- `src/auth.ts` - Fix 3 `any` type warnings  
-- `src/utils.ts` - Fix 1 `any` type warning
-
-### 2. **Implement Daily Activity Summary Tool**
+### 1. **Implement Daily Activity Summary Tool**
 **Priority: High | Effort: Medium | Status: To Do**
 
 **Problem:** No tool to fetch a consolidated summary of a user's activity for a specific day, including goal progress.
@@ -36,7 +21,7 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 - Create `src/daily_activity.ts` (or a similar name, to house the new tool logic and interfaces)
 - `TASKS.md` (to update status upon completion)
 
-### 3. **Implement Activity Goals Tool**
+### 2. **Implement Activity Goals Tool**
 **Priority: Medium | Effort: Low-Medium | Status: To Do**
 
 **Problem:** The server cannot currently retrieve the user's defined activity goals.
@@ -53,7 +38,7 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 - Create `src/activity_goals.ts` (or add to an existing relevant file like `src/activities.ts` if deemed appropriate, though a new file might be cleaner)
 - `TASKS.md` (to update status upon completion)
 
-### 4. **Implement Activity Time Series Tool**
+### 3. **Implement Activity Time Series Tool**
 **Priority: High | Effort: Medium | Status: To Do**
 
 **Problem:** No tool to fetch time series data for overall daily activity metrics (e.g., total steps, distance, calories burned per day). The existing `get_exercises` tool lists logged activities but doesn't provide daily aggregate trends.
@@ -70,7 +55,7 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 - Create `src/activity_timeseries.ts` (or a similar name)
 - `TASKS.md` (to update status upon completion)
 
-### 5. **Implement Active Zone Minutes (AZM) Time Series Tool**
+### 4. **Implement Active Zone Minutes (AZM) Time Series Tool**
 **Priority: Medium | Effort: Low-Medium | Status: To Do**
 
 **Problem:** No dedicated tool to track Active Zone Minutes (AZM) trends over time. While individual activities might contain AZM data, a specific time series for daily total AZM is missing.
@@ -90,8 +75,7 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 ## Implementation Recommendation
 
 **Recommended Action:** 
-1. Prioritize the implementation of the new Fitbit API tools (Tasks #2, #3, #4, #5) as they directly enhance the server's capability to answer common user queries about their activity and well-being.
-2. Optionally, address the **Minor Type Safety Cleanup** (Task #1) if time permits and 100% clean linting is desired.
+1. Prioritize the implementation of the new Fitbit API tools (Tasks #1, #2, #3, #4) as they directly enhance the server's capability to answer common user queries about their activity and well-being.
 
 ## Design Philosophy Reminder
 
