@@ -7,6 +7,7 @@ import { AuthorizationCode } from 'simple-oauth2';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
+import { FITBIT_OAUTH_CONFIG } from './config.js';
 
 // TypeScript interfaces for token data structures
 // The Token interface from simple-oauth2 uses this structure
@@ -131,7 +132,7 @@ export function startAuthorizationFlow(): void {
   const authorizationUri = oauthClient.authorizeURL({
     redirect_uri: REDIRECT_URI,
     // Define necessary scopes required by the application
-    scope: 'weight sleep profile activity heartrate nutrition',
+    scope: FITBIT_OAUTH_CONFIG.SCOPES,
   });
 
   // Route to initiate the authorization flow by redirecting the user to Fitbit
