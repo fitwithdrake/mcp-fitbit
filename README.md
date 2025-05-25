@@ -20,11 +20,13 @@ It allows the LLM to request and retrieve health and fitness data from a user's 
     *   `get_profile`: Retrieves the user's Fitbit profile information, including personal details such as name, age, gender, height, weight, and account information.
 *   **Activities/Exercises:**
     *   `get_exercises`: Retrieves detailed exercise and activity logs after a specific date. Requires `afterDate` parameter in `YYYY-MM-DD` format, with an optional `limit` parameter (1-100, default: 20).
+*   **Heart Rate:**
+    *   `get_heart_rate`: Retrieves raw heart rate data for a specified period ending today or on a specific date. Requires a `period` parameter (`1d`, `7d`, `30d`, `1w`, `1m`) and optionally accepts a `date` parameter in `YYYY-MM-DD` format or `today` (default: `today`).
+    *   `get_heart_rate_by_date_range`: Retrieves raw heart rate data for a specific date range (max 1 year). Requires `startDate` and `endDate` parameters in `YYYY-MM-DD` format.
 
 ### Planned Endpoints
 
 *   Steps
-*   Heart Rate
 *   Activity
 
 ## Setup
@@ -144,4 +146,14 @@ Once the server is running and authorized, the following tools will be available
         *   `afterDate` (string, required) - Specifies the date after which to retrieve activities in `YYYY-MM-DD` format.
         *   `limit` (number, optional) - Maximum number of activities to return (1-100, default: 20).
     *   **Example Usage (Conceptual):** `get_exercises(afterDate="2025-04-01", limit=30)`
+*   `get_heart_rate`: Fetches raw heart rate data as a JSON string for a specified period ending today or on a specific date.
+    *   **Parameters:**
+        *   `period` (string, required) - Specifies the duration. Must be one of: `"1d"`, `"7d"`, `"30d"`, `"1w"`, `"1m"`.
+        *   `date` (string, optional) - Specifies the date in `YYYY-MM-DD` format or `"today"`. Defaults to `"today"`.
+    *   **Example Usage (Conceptual):** `get_heart_rate(period="7d")` or `get_heart_rate(period="1d", date="2025-04-15")`
+*   `get_heart_rate_by_date_range`: Fetches raw heart rate data as a JSON string for a specific date range (maximum 1 year).
+    *   **Parameters:**
+        *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
+        *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
+    *   **Example Usage (Conceptual):** `get_heart_rate_by_date_range(startDate="2025-04-01", endDate="2025-04-30")`
 

@@ -108,7 +108,7 @@ export function startAuthorizationFlow(): void {
     const authorizationUri = oauthClient.authorizeURL({
         redirect_uri: REDIRECT_URI,
         // Define necessary scopes required by the application
-        scope: 'weight sleep profile activity',
+        scope: 'weight sleep profile activity heartrate',
     });
 
     // Route to initiate the authorization flow by redirecting the user to Fitbit
