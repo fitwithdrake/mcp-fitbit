@@ -7,10 +7,16 @@
     "fitbit": "./build/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "build": "tsc",
     "start": "node build/index.js",
-    "dev": "npm run build && npx @modelcontextprotocol/inspector node build/index.js"
+    "dev": "npm run build && npx @modelcontextprotocol/inspector node build/index.js",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts"
   },
   "keywords": [],
   "author": "",
@@ -29,8 +35,15 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.27.0",
     "@types/node": "^22.15.3",
     "@types/simple-oauth2": "^5.0.7",
-    "typescript": "^5.8.3"
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "@vitest/ui": "^3.1.4",
+    "eslint": "^9.27.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4"
   }
 }

@@ -1,8 +1,6 @@
-// filepath: d:\projects\personal\mcp-fitbit\src\activities.ts
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { makeFitbitRequest, ToolResponseStructure } from "./utils.js";
-
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { makeFitbitRequest, ToolResponseStructure } from './utils.js';
 
 // --- Fitbit API Response Interfaces for Activities ---
 
@@ -58,7 +56,6 @@ interface ActivitiesListResponse {
   };
 }
 
-
 // --- Tool Registration ---
 
 /**
@@ -67,70 +64,82 @@ interface ActivitiesListResponse {
  * @param getAccessTokenFn Function to retrieve the current access token.
  */
 export function registerActivitiesTool(
-    server: McpServer,
-    getAccessTokenFn: () => Promise<string | null>
+  server: McpServer,
+  getAccessTokenFn: () => Promise<string | null>
 ): void {
-    const toolName = "get_exercises";
-    const description = "Get the raw JSON response for exercise and activity logs from Fitbit after a specific date. Requires 'afterDate' parameter in 'YYYY-MM-DD' format. Retrieves a detailed list of logged exercises and activities.";
+  const toolName = 'get_exercises';
+  const description =
+    "Get the raw JSON response for exercise and activity logs from Fitbit after a specific date. Requires 'afterDate' parameter in 'YYYY-MM-DD' format. Retrieves a detailed list of logged exercises and activities.";
 
-    const parametersSchemaShape = {
-        afterDate: z.string()
-               .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format.")
-               .describe("Retrieve activities after this date (YYYY-MM-DD)."),
-        limit: z.number()
-               .min(1)
-               .max(100)
-               .optional()
-               .describe("Maximum number of activities to return (1-100, default: 20)")
-    };
+  const parametersSchemaShape = {
+    afterDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format.')
+      .describe('Retrieve activities after this date (YYYY-MM-DD).'),
+    limit: z
+      .number()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe('Maximum number of activities to return (1-100, default: 20)'),
+  };
 
-    type ActivitiesParams = {
-        afterDate: string;
-        limit?: number;
-    };
+  type ActivitiesParams = {
+    afterDate: string;
+    limit?: number;
+  };
 
-    server.tool(
-        toolName,
-        description,
-        parametersSchemaShape,
-        async ({ afterDate, limit = 20 }: ActivitiesParams): Promise<ToolResponseStructure> => {
-            // Use the correct Fitbit API endpoint structure - only afterDate is supported
-            const endpoint = `activities/list.json?afterDate=${afterDate}&sort=asc&offset=0&limit=${limit}`;
-            
-            console.error(`DEBUG - Request endpoint: ${endpoint}`);
-            
-            // Make the request using shared utility
-            const activitiesData = await makeFitbitRequest<ActivitiesListResponse>(
-                endpoint,
-                getAccessTokenFn,
-                "https://api.fitbit.com/1"
-            );
+  server.tool(
+    toolName,
+    description,
+    parametersSchemaShape,
+    async ({
+      afterDate,
+      limit = 20,
+    }: ActivitiesParams): Promise<ToolResponseStructure> => {
+      // Use the correct Fitbit API endpoint structure - only afterDate is supported
+      const endpoint = `activities/list.json?afterDate=${afterDate}&sort=asc&offset=0&limit=${limit}`;
 
-            // Handle API call failure
-            if (!activitiesData) {
-                return {
-                    content: [{ 
-                        type: "text", 
-                        text: `Failed to retrieve exercise data from Fitbit API after date '${afterDate}'. Check API permissions and date format.` 
-                    }],
-                    isError: true
-                };
-            }
+      console.error(`DEBUG - Request endpoint: ${endpoint}`);
 
-            // Handle no data found
-            const activityEntries = activitiesData.activities || [];
-            if (activityEntries.length === 0) {
-                return {
-                    content: [{ type: "text", text: `No exercise data found after date '${afterDate}'.` }]
-                };
-            }
+      // Make the request using shared utility
+      const activitiesData = await makeFitbitRequest<ActivitiesListResponse>(
+        endpoint,
+        getAccessTokenFn,
+        'https://api.fitbit.com/1'
+      );
 
-            // Return successful response
-            const rawJsonResponse = JSON.stringify(activitiesData, null, 2);
-            return {
-                content: [{ type: "text", text: rawJsonResponse }],
-            };
-        }
-    );
+      // Handle API call failure
+      if (!activitiesData) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Failed to retrieve exercise data from Fitbit API after date '${afterDate}'. Check API permissions and date format.`,
+            },
+          ],
+          isError: true,
+        };
+      }
 
+      // Handle no data found
+      const activityEntries = activitiesData.activities || [];
+      if (activityEntries.length === 0) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `No exercise data found after date '${afterDate}'.`,
+            },
+          ],
+        };
+      }
+
+      // Return successful response
+      const rawJsonResponse = JSON.stringify(activitiesData, null, 2);
+      return {
+        content: [{ type: 'text', text: rawJsonResponse }],
+      };
+    }
+  );
 }

@@ -9,8 +9,9 @@ MCP server for Fitbit API integration providing health data access (weight, slee
 - `npm run build` - Compile TypeScript to build/ directory
 - `npm run start` - Run the built MCP server
 - `npm run dev` - Build and run with MCP inspector for testing/debugging
+- `npm run lint` - Check code quality and style issues
+- `npm run format` - Auto-fix code formatting
 - `npm test` - No tests configured yet
-- No linting/typechecking scripts configured
 
 ## Project Structure
 - `src/index.ts` - Main MCP server entry point, registers all tools
@@ -68,6 +69,7 @@ When working on this codebase:
 2. Update relevant documentation 
 3. Test changes thoroughly with the MCP inspector
 4. Ensure backward compatibility with existing tools
-5. Update documentation when making changes
+5. **VERY IMPORTANT:** When you have completed a task, you MUST run the lint commands (`npm run lint`) with Bash to ensure your code is correct
+6. Update documentation when making changes
 
 **For identified improvement opportunities, see [TASKS.md](TASKS.md)** - this file contains a comprehensive analysis of refactoring opportunities, code quality improvements, and architectural enhancements prioritized by impact and effort.

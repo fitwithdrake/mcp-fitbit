@@ -95,10 +95,12 @@ When you first ask your AI assistant to use Fitbit data:
 
 ## Development
 
-**Scripts:**
-- `npm run dev` - Build and run with MCP Inspector
-- `npm run build` - Compile TypeScript
-- `npm run start` - Run the built server
+```bash
+npm run lint          # Check code quality
+npm run format        # Fix formatting
+npm run build         # Compile TypeScript
+npm run dev           # Run with MCP inspector
+```
 
 **Architecture:** See [TASKS.md](TASKS.md) for improvement opportunities and technical details.
 
