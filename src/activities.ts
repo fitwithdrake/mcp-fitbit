@@ -3,8 +3,6 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { makeFitbitRequest, ToolResponseStructure } from "./utils.js";
 
-// Use API version 1 for activities endpoints
-const FITBIT_API_BASE = "https://api.fitbit.com/1";
 
 // --- Fitbit API Response Interfaces for Activities ---
 
@@ -60,55 +58,6 @@ interface ActivitiesListResponse {
   };
 }
 
-// --- Special function to make API request with enhanced error handling ---
-async function makeFitbitActivityRequest(
-    endpoint: string,
-    getAccessTokenFn: () => string | null
-): Promise<{ data: ActivitiesListResponse | null; errorDetails: string | null }> {
-    const currentAccessToken = getAccessTokenFn();
-    if (!currentAccessToken) {
-        return { 
-            data: null, 
-            errorDetails: "No Fitbit Access Token available. Please authorize first." 
-        };
-    }
-
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
-    const url = `${FITBIT_API_BASE}/${cleanEndpoint}`;
-    console.error(`DEBUG - Attempting Fitbit API activity request to: ${url}`);
-
-    const headers = {
-        "User-Agent": "mcp-fitbit-server/1.0",
-        "Authorization": `Bearer ${currentAccessToken}`,
-        "Accept": "application/json",
-    };
-
-    try {
-        const response = await fetch(url, { headers });
-        if (!response.ok) {
-            const errorBody = await response.text();
-            console.error(`Fitbit API Error! Status: ${response.status}, URL: ${url}, Body: ${errorBody}`);
-            return {
-                data: null,
-                errorDetails: `API error: Status ${response.status}. ${errorBody}`
-            };
-        }
-        
-        if (response.status === 204) {
-            return { data: {} as ActivitiesListResponse, errorDetails: null };
-        }
-        
-        const jsonData = await response.json();
-        return { data: jsonData as ActivitiesListResponse, errorDetails: null };
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error(`Error making Fitbit request to ${url}:`, errorMessage);
-        return { 
-            data: null, 
-            errorDetails: `Network or parsing error: ${errorMessage}` 
-        };
-    }
-}
 
 // --- Tool Registration ---
 
@@ -146,14 +95,15 @@ export function registerActivitiesTool(
         parametersSchemaShape,
         async ({ afterDate, limit = 20 }: ActivitiesParams): Promise<ToolResponseStructure> => {
             // Use the correct Fitbit API endpoint structure - only afterDate is supported
-            const endpoint = `/user/-/activities/list.json?afterDate=${afterDate}&sort=asc&offset=0&limit=${limit}`;
+            const endpoint = `activities/list.json?afterDate=${afterDate}&sort=asc&offset=0&limit=${limit}`;
             
             console.error(`DEBUG - Request endpoint: ${endpoint}`);
             
-            // Make the request with enhanced error handling
-            const { data: activitiesData, errorDetails } = await makeFitbitActivityRequest(
+            // Make the request using shared utility
+            const activitiesData = await makeFitbitRequest<ActivitiesListResponse>(
                 endpoint,
-                getAccessTokenFn
+                getAccessTokenFn,
+                "https://api.fitbit.com/1"
             );
 
             // Handle API call failure
@@ -161,7 +111,7 @@ export function registerActivitiesTool(
                 return {
                     content: [{ 
                         type: "text", 
-                        text: `Failed to retrieve exercise data from Fitbit API after date '${afterDate}'. ${errorDetails || 'Check API permissions and date format.'}` 
+                        text: `Failed to retrieve exercise data from Fitbit API after date '${afterDate}'. Check API permissions and date format.` 
                     }],
                     isError: true
                 };

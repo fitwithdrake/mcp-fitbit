@@ -4,19 +4,21 @@ This document outlines identified improvements and refactoring opportunities for
 
 ## High Priority Issues
 
-### 1. **Inconsistent API Request Handling** 
+### 1. **~~Inconsistent API Request Handling~~** ✅ **COMPLETED**
 **Priority: High | Effort: Medium**
 
 **Problem:** `src/activities.ts:64-111` has a custom `makeFitbitActivityRequest` function that duplicates logic from `utils.ts:makeFitbitRequest`. This creates maintenance overhead and inconsistent error handling patterns.
 
 **Solution:** 
-- Refactor `activities.ts` to use the shared `makeFitbitRequest` utility function
-- Remove the custom `makeFitbitActivityRequest` function
-- Ensure activities endpoint works with the standard utility
+- ✅ Refactor `activities.ts` to use the shared `makeFitbitRequest` utility function
+- ✅ Remove the custom `makeFitbitActivityRequest` function
+- ✅ Ensure activities endpoint works with the standard utility
 
-**Files to modify:**
-- `src/activities.ts` - Remove custom request function, use shared utility
-- `src/utils.ts` - May need minor adjustments for activities endpoint compatibility
+**Files modified:**
+- ✅ `src/activities.ts` - Removed custom request function, now uses shared utility
+- ✅ No changes needed to `src/utils.ts` - existing utility worked as-is
+
+**Completion Notes:** Successfully refactored activities.ts to use makeFitbitRequest utility with explicit API base URL parameter. Eliminated 48 lines of duplicate code and standardized error handling. Tested and confirmed functionality remains intact.
 
 ### 2. **Incomplete Token Management**
 **Priority: High | Effort: Medium**
