@@ -8,6 +8,19 @@ import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
 
+// TypeScript interfaces for token data structures
+// The Token interface from simple-oauth2 uses this structure
+interface FitbitTokenData {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  expires_at?: string;
+  scope: string;
+  token_type: string;
+  user_id: string;
+  [key: string]: unknown; // Add index signature for compatibility with simple-oauth2 Token type
+}
+
 // Determine the directory of the current module (build/auth.js)
 const currentFilename = fileURLToPath(import.meta.url);
 const currentDirname = path.dirname(currentFilename);
@@ -39,7 +52,7 @@ const PORT = 3000;
 // --- State Management ---
 // Storage for the access token and token data
 let accessToken: string | null = null;
-let tokenData: any = null;
+let tokenData: FitbitTokenData | null = null;
 // Holds the temporary HTTP server instance used for the OAuth callback
 let oauthServer: http.Server | null = null;
 
@@ -53,7 +66,7 @@ const oauthClient = new AuthorizationCode(fitbitConfig);
  * Saves the token data to a file for persistence
  * @param tokenData The token data to save
  */
-async function saveTokenToFile(tokenData: any): Promise<void> {
+async function saveTokenToFile(tokenData: FitbitTokenData): Promise<void> {
     try {
         await fs.writeFile(TOKEN_FILE_PATH, JSON.stringify(tokenData, null, 2), 'utf8');
         console.error(`Token saved to ${TOKEN_FILE_PATH}`);
@@ -66,7 +79,7 @@ async function saveTokenToFile(tokenData: any): Promise<void> {
  * Loads the token data from file
  * @returns The token data or null if not found
  */
-async function loadTokenFromFile(): Promise<any> {
+async function loadTokenFromFile(): Promise<FitbitTokenData | null> {
     try {
         if (!existsSync(TOKEN_FILE_PATH)) {
             console.error(`Token file not found at ${TOKEN_FILE_PATH}`);
@@ -140,11 +153,13 @@ export function startAuthorizationFlow(): void {
             const tokenResult = await oauthClient.getToken(tokenParams);
             console.error('Access Token received successfully!');
             accessToken = tokenResult.token.access_token as string;
-            tokenData = tokenResult.token;
+            tokenData = tokenResult.token as FitbitTokenData;
             
             // Persist token data to file
-            await saveTokenToFile(tokenData);
-            console.error('Token data has been persisted to file');
+            if (tokenData) {
+                await saveTokenToFile(tokenData);
+                console.error('Token data has been persisted to file');
+            }
 
             res.send('Authorization successful! You can close this window. The MCP Server is now authenticated.');
 
@@ -200,10 +215,41 @@ export function startAuthorizationFlow(): void {
 
 /**
  * Retrieves the current Fitbit access token.
+ * Automatically checks for token expiry and refreshes if necessary.
  * @returns The access token string or null if not available.
  */
-export function getAccessToken(): string | null {
-    // TODO: Implement logic to check token expiry and use refresh token if necessary
+export async function getAccessToken(): Promise<string | null> {
+    // Return null if no token data exists
+    if (!tokenData || !accessToken) {
+        return null;
+    }
+
+    // Check if token is expired
+    if (tokenData.expires_at && new Date(tokenData.expires_at) < new Date()) {
+        console.error("Token is expired. Attempting to refresh...");
+        try {
+            // Create AccessToken instance from the current token data
+            const accessTokenObj = oauthClient.createToken(tokenData as any);
+            
+            // Refresh the token
+            if (accessTokenObj.expired()) {
+                const refreshedToken = await accessTokenObj.refresh();
+                accessToken = refreshedToken.token.access_token as string;
+                tokenData = refreshedToken.token as FitbitTokenData;
+                
+                // Save the refreshed token
+                await saveTokenToFile(tokenData);
+                console.error("Token refreshed and saved successfully.");
+                return accessToken;
+            }
+        } catch (refreshError) {
+            console.error("Failed to refresh token:", refreshError);
+            accessToken = null;
+            tokenData = null;
+            return null;
+        }
+    }
+
     return accessToken;
 }
 
@@ -227,16 +273,18 @@ export async function initializeAuth(): Promise<void> {
                 console.error("Token is expired. Attempting to refresh...");
                 try {
                     // Create AccessToken instance from the loaded token data
-                    const accessTokenObj = oauthClient.createToken(tokenData);
+                    const accessTokenObj = oauthClient.createToken(tokenData as any);
                     
                     // Refresh the token
                     if (accessTokenObj.expired()) {
                         const refreshedToken = await accessTokenObj.refresh();
                         accessToken = refreshedToken.token.access_token as string;
-                        tokenData = refreshedToken.token;
+                        tokenData = refreshedToken.token as FitbitTokenData;
                         
                         // Save the refreshed token
-                        await saveTokenToFile(tokenData);
+                        if (tokenData) {
+                            await saveTokenToFile(tokenData);
+                        }
                         console.error("Token refreshed and saved successfully.");
                     }
                 } catch (refreshError) {

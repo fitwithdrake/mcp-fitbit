@@ -25,7 +25,7 @@ interface FitbitProfile {
  */
 export function registerProfileTool(
   server: McpServer,
-  getAccessTokenFn: () => string | null
+  getAccessTokenFn: () => Promise<string | null>
 ): void {
   const toolName = "get_profile";
   const description = "Get the raw JSON response for the user's Fitbit profile.";

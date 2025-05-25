@@ -70,7 +70,7 @@ interface FoodLogResponse {
  */
 export function registerNutritionTools(
     server: McpServer,
-    getAccessTokenFn: () => string | null
+    getAccessTokenFn: () => Promise<string | null>
 ): void {
     
     // --- Food Log Tool (comprehensive nutrition data) ---

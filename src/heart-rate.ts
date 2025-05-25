@@ -41,7 +41,7 @@ interface HeartRateTimeSeriesResponse {
  */
 export function registerHeartRateTools(
     server: McpServer,
-    getAccessTokenFn: () => string | null
+    getAccessTokenFn: () => Promise<string | null>
 ): void {
     
     // --- Heart Rate by Date/Period Tool ---

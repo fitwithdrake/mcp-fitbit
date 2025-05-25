@@ -68,7 +68,7 @@ interface ActivitiesListResponse {
  */
 export function registerActivitiesTool(
     server: McpServer,
-    getAccessTokenFn: () => string | null
+    getAccessTokenFn: () => Promise<string | null>
 ): void {
     const toolName = "get_exercises";
     const description = "Get the raw JSON response for exercise and activity logs from Fitbit after a specific date. Requires 'afterDate' parameter in 'YYYY-MM-DD' format. Retrieves a detailed list of logged exercises and activities.";

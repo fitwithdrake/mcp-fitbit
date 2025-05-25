@@ -25,10 +25,10 @@ export type ToolResponseStructure = {
  */
 export async function makeFitbitRequest<T>(
     endpoint: string,
-    getAccessTokenFn: () => string | null,
+    getAccessTokenFn: () => Promise<string | null>,
     apiBase: string = "https://api.fitbit.com/1"
 ): Promise<T | null> {
-    const currentAccessToken = getAccessTokenFn();
+    const currentAccessToken = await getAccessTokenFn();
     if (!currentAccessToken) {
         console.error("Error: No Fitbit Access Token available. Please authorize first.");
         return null;

@@ -20,31 +20,37 @@ This document outlines identified improvements and refactoring opportunities for
 
 **Completion Notes:** Successfully refactored activities.ts to use makeFitbitRequest utility with explicit API base URL parameter. Eliminated 48 lines of duplicate code and standardized error handling. Tested and confirmed functionality remains intact.
 
-### 2. **Incomplete Token Management**
+### 2. **~~Incomplete Token Management~~** ✅ **COMPLETED**
 **Priority: High | Effort: Medium**
 
 **Problem:** `auth.ts:206` has a TODO comment about token expiry checking that's never implemented. The `getAccessToken()` function doesn't validate token expiry, only `initializeAuth()` does.
 
 **Solution:**
-- Move expiry checking and refresh logic into `getAccessToken()` for automatic token refresh
-- Implement proper token validation before each API call
-- Handle refresh token flow gracefully
+- ✅ Move expiry checking and refresh logic into `getAccessToken()` for automatic token refresh
+- ✅ Implement proper token validation before each API call
+- ✅ Handle refresh token flow gracefully
 
-**Files to modify:**
-- `src/auth.ts` - Enhance `getAccessToken()` with expiry checking and auto-refresh
+**Files modified:**
+- ✅ `src/auth.ts` - Enhanced `getAccessToken()` with expiry checking and auto-refresh
+- ✅ `src/utils.ts` - Updated function signature to handle async token function
+- ✅ All tool files - Updated function signatures to handle async `getAccessToken`
 
-### 3. **Type Safety Issues**
+**Completion Notes:** Successfully implemented automatic token expiry checking and refresh in the `getAccessToken()` function. The function now automatically handles token expiry and refresh before returning the access token, ensuring API calls never fail due to expired tokens. Updated all tool registration functions to handle the new async signature.
+
+### 3. **~~Type Safety Issues~~** ✅ **COMPLETED**
 **Priority: High | Effort: Low**
 
 **Problem:** `auth.ts:42` uses `any` type for `tokenData`. Missing proper TypeScript interfaces for OAuth token structures.
 
 **Solution:**
-- Create proper interfaces for token data structures
-- Replace `any` types with proper TypeScript interfaces
-- Add type safety to token-related functions
+- ✅ Create proper interfaces for token data structures
+- ✅ Replace `any` types with proper TypeScript interfaces
+- ✅ Add type safety to token-related functions
 
-**Files to modify:**
-- `src/auth.ts` - Add token interfaces, replace `any` types
+**Files modified:**
+- ✅ `src/auth.ts` - Added `FitbitTokenData` interface and replaced `any` types
+
+**Completion Notes:** Successfully created a proper `FitbitTokenData` interface with all required token properties and added an index signature for compatibility with the simple-oauth2 library. Replaced all `any` types in token-related functions with the proper interface, improving type safety throughout the authentication module.
 
 ## Medium Priority Improvements
 

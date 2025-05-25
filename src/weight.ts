@@ -24,7 +24,7 @@ interface WeightTimeSeriesResponse {
  */
 export function registerWeightTool(
     server: McpServer,
-    getAccessTokenFn: () => string | null
+    getAccessTokenFn: () => Promise<string | null>
 ): void {
     const toolName = "get_weight";
     const description = "Get the raw JSON response for weight entries from Fitbit for a specified period ending today. Requires a 'period' parameter such as '1d', '7d', '30d', '3m', '6m', '1y'";

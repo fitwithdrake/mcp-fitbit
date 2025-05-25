@@ -62,7 +62,8 @@ async function main() {
 
         // Check if an access token is available after connection
         // If not, initiate the OAuth2 authorization flow
-        if (!getAccessToken()) {
+        const token = await getAccessToken();
+        if (!token) {
             console.error("No access token found. Starting Fitbit authorization flow...");
             startAuthorizationFlow(); // Start flow in background, do not await
         } else {

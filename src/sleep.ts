@@ -86,7 +86,7 @@ interface SleepLogRangeResponse {
  */
 export function registerSleepTool(
     server: McpServer,
-    getAccessTokenFn: () => string | null
+    getAccessTokenFn: () => Promise<string | null>
 ): void {
     const toolName = "get_sleep_by_date_range";
     const description = "Get the raw JSON response for sleep logs from Fitbit for a specific date range. Requires 'startDate' and 'endDate' parameters in 'YYYY-MM-DD' format. Note: The API enforces a maximum range of 100 days.";
