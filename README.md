@@ -1,180 +1,100 @@
 # Fitbit MCP Server
+> Connect AI assistants to your Fitbit health data
 
-This project implements a Model Context Protocol (MCP) server that acts as a bridge between an LLM (like Claude) and the Fitbit API.
+Give your AI assistant access to your Fitbit data for personalized health insights, trend analysis, and automated tracking. Works with Claude, ChatGPT, Gemini, and other MCP-compatible AI tools.
 
-It allows the LLM to request and retrieve health and fitness data from a user's Fitbit account via defined tools.
+## What it does
 
-## Features
+🏃 **Exercise & Activities** - Get detailed workout logs and activity data  
+😴 **Sleep Analysis** - Retrieve sleep patterns and quality metrics  
+⚖️ **Weight Tracking** - Access weight trends over time  
+❤️ **Heart Rate Data** - Monitor heart rate patterns and zones  
+🍎 **Nutrition Logs** - Review food intake, calories, and macros  
+👤 **Profile Info** - Access basic Fitbit profile details
 
-*   **Fitbit API Integration:** Connects securely to the Fitbit API using OAuth 2.0.
-*   **MCP Compliance:** Exposes Fitbit data through tools compliant with the Model Context Protocol.
-*   **Extensible:** Designed to easily add support for more Fitbit API endpoints.
+*Ask your AI things like: "Show me my sleep patterns this week" or "What's my average heart rate during workouts?"*
 
-### Supported Endpoints
+## Quick Start
 
-*   **Weight:**
-    *   `get_weight`: Retrieves raw weight data for a specified period (`1d`, `7d`, `30d`, `3m`, `6m`, `1y`) ending today. Requires a `period` parameter.
-*   **Sleep:**
-    *   `get_sleep_by_date_range`: Retrieves raw sleep log data for a specific date range (max 100 days). Requires `startDate` and `endDate` parameters in `YYYY-MM-DD` format.
-*   **Profile:**
-    *   `get_profile`: Retrieves the user's Fitbit profile information, including personal details such as name, age, gender, height, weight, and account information.
-*   **Activities/Exercises:**
-    *   `get_exercises`: Retrieves detailed exercise and activity logs after a specific date. Requires `afterDate` parameter in `YYYY-MM-DD` format, with an optional `limit` parameter (1-100, default: 20).
-*   **Heart Rate:**
-    *   `get_heart_rate`: Retrieves raw heart rate data for a specified period ending today or on a specific date. Requires a `period` parameter (`1d`, `7d`, `30d`, `1w`, `1m`) and optionally accepts a `date` parameter in `YYYY-MM-DD` format or `today` (default: `today`).
-    *   `get_heart_rate_by_date_range`: Retrieves raw heart rate data for a specific date range (max 1 year). Requires `startDate` and `endDate` parameters in `YYYY-MM-DD` format.
-*   **Nutrition:**
-    *   `get_food_log`: Retrieves comprehensive nutrition data (calories, protein, carbs, fat, fiber, sodium) from Fitbit food log for a specific date. Returns daily summary totals and individual food entries with nutritional values.
-    *   `get_nutrition`: Retrieves raw nutrition data for individual nutrients for a specified period ending today or on a specific date. Requires `resource` parameter (`caloriesIn`, `water`, `protein`, `carbs`, `fat`, `fiber`, `sodium`) and `period` parameter (`1d`, `7d`, `30d`, `1w`, `1m`, `3m`, `6m`, `1y`), with optional `date` parameter.
-    *   `get_nutrition_by_date_range`: Retrieves raw nutrition data for individual nutrients for a specific date range (max 1,095 days). Requires `resource`, `startDate` and `endDate` parameters.
-
-### Planned Endpoints
-
-*   Steps
-*   Activity
-
-## Setup
-
-1.  **Clone the Repository:**
-    ```bash
-    git clone https://github.com/TheDigitalNinja/mcp-fitbit
-    cd MCP-Server
-    ```
-
-2.  **Install Dependencies:**
-    ```bash
-    npm install
-    ```
-
-3.  **Create Environment File:**
-    *   Create a file named `.env` in the project root (`mcp-fitbit/`).
-    *   Add your Fitbit application credentials:
-        ```dotenv
-        FITBIT_CLIENT_ID=YOUR_FITBIT_CLIENT_ID
-        FITBIT_CLIENT_SECRET=YOUR_FITBIT_CLIENT_SECRET
-        ```
-    *   You can obtain these by registering an application at [dev.fitbit.com](https://dev.fitbit.com/). Ensure the **OAuth 2.0 Application Type** is set to `Personal` and the **Callback URL** is `http://localhost:3000/callback`.
-
-4.  **Build the Project:**
-    ```bash
-    npm run build
-    ```
-    This compiles the TypeScript source files (`src/`) into JavaScript files (`build/`).
-
-## Quick Start Testing
-
-**🚀 Want to test the Fitbit tools quickly?**
+**🚀 Want to test the tools right away?**
 
 ```bash
+git clone https://github.com/TheDigitalNinja/mcp-fitbit
+cd mcp-fitbit
+npm install
 npm run dev
 ```
 
-This command builds the project and launches the **MCP Inspector** - a web-based testing interface at `http://localhost:5173`. The MCP Inspector allows you to:
+This opens the **MCP Inspector** at `http://localhost:5173` where you can test all tools interactively and handle the OAuth flow.
 
-*   Test all Fitbit tools interactively in your browser
-*   View tool schemas and parameters
-*   Execute OAuth flow and see real API responses
-*   Debug tool behavior before integrating with Claude Desktop
+## Installation
 
+1. **Get Fitbit API credentials** at [dev.fitbit.com](https://dev.fitbit.com/)
+   - Set **OAuth 2.0 Application Type** to `Personal`
+   - Set **Callback URL** to `http://localhost:3000/callback`
 
-## Development
+2. **Create `.env` file:**
+   ```bash
+   FITBIT_CLIENT_ID=your_client_id_here
+   FITBIT_CLIENT_SECRET=your_client_secret_here
+   ```
 
-*   **Source code:** Located in the `src/` directory
-*   **Available scripts:**
-    *   `npm run build` - Compile TypeScript to build/ directory
-    *   `npm run start` - Run the built MCP server
-    *   `npm run dev` - Build and run with MCP inspector for testing/debugging
-*   **Testing:** Use `npm run dev` to test tools interactively with the MCP inspector web UI at http://localhost:5173
-*   **Note:** Restart Claude for Desktop to pick up the latest build if the server was already running via Claude
-*   **Improvements:** See [TASKS.md](TASKS.md) for identified improvements and refactoring opportunities
+3. **Build the server:**
+   ```bash
+   npm run build
+   ```
 
-## Integrating with Claude for Desktop
-
-To use this Fitbit MCP server with Claude for Desktop:
-
-1.  **Locate the Claude Configuration File:**
-    *   On Windows, open the file explorer and navigate to `%AppData%\Claude\`.
-    *   Open the `claude_desktop_config.json` file in a text editor.
-
-2.  **Add the Server Configuration:**
-    *   Find the `mcpServers` key in the JSON file (if it doesn't exist, you might need to add it).
-    *   Add an entry for the Fitbit server. Replace `C:\PATH\TO\PARENT\FOLDER\mcp-fitbit` with the **absolute path** to the directory where you cloned this repository.
-
-    ```json
-    {
-        "mcpServers": {
-            "fitbit": {
-                "command": "node",
-                "args": [
-                    "C:\\PATH\\TO\\PARENT\\FOLDER\\mcp-fitbit\\build\\index.js"
-                ]
-            }
-            // Add other servers here if you have them
-        }
-        // ... other Claude settings ...
-    }
-    ```
-
-    *   **Important:** Ensure you use double backslashes (`\\`) for paths on Windows in the JSON file.
-
-3.  **Save and Restart:**
-    *   Save the `claude_desktop_config.json` file.
-    *   Restart the Claude for Desktop application.
-
-4.  **First Run & Authorization:**
-    *   The first time Claude connects to the server (e.g., when you ask it a question that requires a Fitbit tool), the server will initiate the Fitbit OAuth 2.0 authorization flow.
-    *   A console window for the server might appear briefly.
-    *   The server will attempt to open `http://localhost:3000/auth` in your default web browser.
-    *   If the browser doesn't open automatically, navigate to that URL manually.
-    *   Log in to your Fitbit account and grant the application permission for the requested scopes (Weight, Sleep, Profile, Activity, Heart Rate, and Nutrition).
-    *   You will be redirected to `http://localhost:3000/callback`.
-    *   A success message will appear in the browser tab, which can then be closed.
-    *   The server is now authenticated and Claude can use the Fitbit tools.
 
 ## Available Tools
 
-Once the server is running and authorized, the following tools will be available to the connected LLM:
+| Tool | Description | Parameters |
+|------|-------------|------------|
+| `get_weight` | Weight data over time periods | `period`: `1d`, `7d`, `30d`, `3m`, `6m`, `1y` |
+| `get_sleep_by_date_range` | Sleep logs for date range (max 100 days) | `startDate`, `endDate` (YYYY-MM-DD) |
+| `get_exercises` | Activity/exercise logs after date | `afterDate` (YYYY-MM-DD), `limit` (1-100) |
+| `get_heart_rate` | Heart rate for time period | `period`: `1d`, `7d`, `30d`, `1w`, `1m`, optional `date` |
+| `get_heart_rate_by_date_range` | Heart rate for date range (max 1 year) | `startDate`, `endDate` (YYYY-MM-DD) |
+| `get_food_log` | Complete nutrition data for a day | `date` (YYYY-MM-DD or "today") |
+| `get_nutrition` | Individual nutrient over time | `resource`, `period`, optional `date` |
+| `get_nutrition_by_date_range` | Individual nutrient for date range | `resource`, `startDate`, `endDate` |
+| `get_profile` | User profile information | None |
 
-*   `get_weight`: Fetches raw weight time series data as a JSON string for a specified period ending today.
-    *   **Parameter:** `period` (string, required) - Specifies the duration. Must be one of: `"1d"`, `"7d"`, `"30d"`, `"3m"`, `"6m"`, `"1y"`.
-    *   **Example Usage (Conceptual):** `get_weight(period="7d")`
-*   `get_sleep_by_date_range`: Fetches raw sleep log data as a JSON string for a specified date range (maximum 100 days).
-    *   **Parameters:**
-        *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
-        *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
-    *   **Example Usage (Conceptual):** `get_sleep_by_date_range(startDate="2025-04-01", endDate="2025-04-30")`
-*   `get_profile`: Fetches the user's Fitbit profile information as a JSON string.
-    *   **Parameters:** None required.
-    *   **Example Usage (Conceptual):** `get_profile()`
-*   `get_exercises`: Fetches detailed exercise and activity logs as a JSON string after a specified date.
-    *   **Parameters:**
-        *   `afterDate` (string, required) - Specifies the date after which to retrieve activities in `YYYY-MM-DD` format.
-        *   `limit` (number, optional) - Maximum number of activities to return (1-100, default: 20).
-    *   **Example Usage (Conceptual):** `get_exercises(afterDate="2025-04-01", limit=30)`
-*   `get_heart_rate`: Fetches raw heart rate data as a JSON string for a specified period ending today or on a specific date.
-    *   **Parameters:**
-        *   `period` (string, required) - Specifies the duration. Must be one of: `"1d"`, `"7d"`, `"30d"`, `"1w"`, `"1m"`.
-        *   `date` (string, optional) - Specifies the date in `YYYY-MM-DD` format or `"today"`. Defaults to `"today"`.
-    *   **Example Usage (Conceptual):** `get_heart_rate(period="7d")` or `get_heart_rate(period="1d", date="2025-04-15")`
-*   `get_heart_rate_by_date_range`: Fetches raw heart rate data as a JSON string for a specific date range (maximum 1 year).
-    *   **Parameters:**
-        *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
-        *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
-    *   **Example Usage (Conceptual):** `get_heart_rate_by_date_range(startDate="2025-04-01", endDate="2025-04-30")`
-*   `get_food_log`: Fetches comprehensive nutrition data as a JSON string for a specific date, including daily summary totals and individual food entries.
-    *   **Parameters:**
-        *   `date` (string, optional) - Specifies the date in `YYYY-MM-DD` format or `"today"`. Defaults to `"today"`.
-    *   **Example Usage (Conceptual):** `get_food_log()` or `get_food_log(date="2025-04-15")`
-*   `get_nutrition`: Fetches raw nutrition data as a JSON string for a specified resource and period ending today or on a specific date.
-    *   **Parameters:**
-        *   `resource` (string, required) - Specifies the nutrition resource. Must be one of: `"caloriesIn"`, `"water"`, `"protein"`, `"carbs"`, `"fat"`, `"fiber"`, `"sodium"`.
-        *   `period` (string, required) - Specifies the duration. Must be one of: `"1d"`, `"7d"`, `"30d"`, `"1w"`, `"1m"`, `"3m"`, `"6m"`, `"1y"`.
-        *   `date` (string, optional) - Specifies the date in `YYYY-MM-DD` format or `"today"`. Defaults to `"today"`.
-    *   **Example Usage (Conceptual):** `get_nutrition(resource="protein", period="7d")` or `get_nutrition(resource="water", period="1d", date="2025-04-15")`
-*   `get_nutrition_by_date_range`: Fetches raw nutrition data as a JSON string for a specific resource and date range (maximum 1,095 days).
-    *   **Parameters:**
-        *   `resource` (string, required) - Specifies the nutrition resource. Must be one of: `"caloriesIn"`, `"water"`, `"protein"`, `"carbs"`, `"fat"`, `"fiber"`, `"sodium"`.
-        *   `startDate` (string, required) - Specifies the start date in `YYYY-MM-DD` format.
-        *   `endDate` (string, required) - Specifies the end date in `YYYY-MM-DD` format.
-    *   **Example Usage (Conceptual):** `get_nutrition_by_date_range(resource="protein", startDate="2025-04-01", endDate="2025-04-30")`
+**Nutrition resources:** `caloriesIn`, `water`, `protein`, `carbs`, `fat`, `fiber`, `sodium`
+
+### Claude Desktop
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "fitbit": {
+      "command": "node",
+      "args": ["C:\\path\\to\\mcp-fitbit\\build\\index.js"]
+    }
+  }
+}
+```
+
+**Config file locations:**
+- Windows: `%AppData%\Claude\claude_desktop_config.json`
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Linux: `~/.config/Claude/claude_desktop_config.json`
+
+### First Run Authorization
+
+When you first ask your AI assistant to use Fitbit data:
+1. The server opens your browser to `http://localhost:3000/auth`
+2. Log in to Fitbit and grant permissions
+3. You'll be redirected to a success page
+4. Your AI can now access your Fitbit data!
+
+## Development
+
+**Scripts:**
+- `npm run dev` - Build and run with MCP Inspector
+- `npm run build` - Compile TypeScript
+- `npm run start` - Run the built server
+
+**Architecture:** See [TASKS.md](TASKS.md) for improvement opportunities and technical details.
 
