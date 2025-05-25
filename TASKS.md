@@ -1,37 +1,10 @@
 # MCP Fitbit Server - Remaining Tasks
 
-This document outlines the remaining improvement opportunities for the MCP Fitbit server after major refactoring work has been completed.
+This document outlines the remaining improvement opportunities for the MCP Fitbit server.
 
-## Project Status
+## Remaining Tasks & New Feature Implementation
 
-**✅ MAJOR REFACTORING COMPLETED**
-
-The following high-impact tasks have been successfully completed:
-- ✅ **Inconsistent API Request Handling** - Consolidated to shared utilities
-- ✅ **Incomplete Token Management** - Auto-refresh and expiry checking implemented
-- ✅ **Type Safety Issues** - Added proper TypeScript interfaces
-- ✅ **Code Duplication & Patterns** - Created reusable tool registration helpers
-- ✅ **Constants Management** - Centralized all constants in `src/config.ts`
-- ✅ **Missing Development Tools** - Added ESLint, Prettier, and Vitest
-
-## Remaining Tasks (Minimal, Focused Improvements)
-
-### 1. **Environment Validation** ✅ COMPLETED
-**Priority: Medium | Effort: Low | Status: COMPLETED**
-
-**Problem:** No validation that required environment variables exist before server starts.
-
-**Why needed:** Improves user experience with clear error messages when setup is incomplete.
-
-**Solution:**
-- ✅ Add startup validation for `FITBIT_CLIENT_ID` and `FITBIT_CLIENT_SECRET`
-- ✅ Provide clear error messages for missing environment variables
-- ✅ Fail fast with helpful guidance
-
-**Files modified:**
-- ✅ `src/index.ts` - Added environment validation before server setup
-
-### 2. **Minor Type Safety Cleanup**
+### 1. **Minor Type Safety Cleanup**
 **Priority: Low | Effort: Low | Status: OPTIONAL**
 
 **Problem:** 4 ESLint warnings about remaining `any` types in `auth.ts` and `utils.ts`.
@@ -46,31 +19,79 @@ The following high-impact tasks have been successfully completed:
 - `src/auth.ts` - Fix 3 `any` type warnings  
 - `src/utils.ts` - Fix 1 `any` type warning
 
-## Tasks Removed (Over-engineering for Local Tool)
+### 2. **Implement Daily Activity Summary Tool**
+**Priority: High | Effort: Medium | Status: To Do**
 
-### ~~Rate Limiting Protection~~ **REMOVED**
-**Reason:** This is a local development tool, not a production service. Rate limiting adds unnecessary complexity for minimal benefit.
+**Problem:** No tool to fetch a consolidated summary of a user's activity for a specific day, including goal progress.
+**Why needed:** Essential for answering user questions like "how did I do today?" by providing a snapshot of daily achievements (steps, distance, calories, active minutes) against defined goals.
+**Solution:**
+- Create a new tool, e.g., `get_daily_activity_summary`.
+- Utilize Fitbit API endpoint: `GET /1/user/-/activities/date/{date}.json`.
+- The tool should accept a `date` parameter in 'YYYY-MM-DD' format.
+- Define necessary TypeScript interfaces for the API response structure (e.g., `DailyActivitySummaryResponse`, `ActivitySummaryData`, `ActivityGoalsSummaryData`).
+- Register the new tool in `src/index.ts`.
+- Ensure the `activity` OAuth scope is requested (it likely already is).
+**Files to modify:**
+- `src/index.ts` (for tool registration and import)
+- Create `src/daily_activity.ts` (or a similar name, to house the new tool logic and interfaces)
+- `TASKS.md` (to update status upon completion)
 
-### ~~Token Storage Security~~ **REMOVED** 
-**Reason:** Plain text storage is acceptable for local development. The token file is local-only and adding encryption adds complexity without meaningful security benefit.
+### 3. **Implement Activity Goals Tool**
+**Priority: Medium | Effort: Low-Medium | Status: To Do**
 
-### ~~Advanced Logging Strategy~~ **REMOVED**
-**Reason:** `console.error` is perfectly adequate for a local development tool. Structured logging is overkill.
+**Problem:** The server cannot currently retrieve the user's defined activity goals.
+**Why needed:** Understanding user goals (e.g., daily steps, weekly active minutes) is crucial context for evaluating their activity data and answering questions about performance.
+**Solution:**
+- Create a new tool, e.g., `get_activity_goals`.
+- Utilize Fitbit API endpoint: `GET /1/user/-/activities/goals/{period}.json`.
+- The tool should accept a `period` parameter (e.g., 'daily', 'weekly').
+- Define TypeScript interfaces for the API response (e.g., `ActivityGoalsResponse`, `GoalsData`).
+- Register the new tool in `src/index.ts`.
+- Ensure the `activity` OAuth scope is requested.
+**Files to modify:**
+- `src/index.ts` (for tool registration and import)
+- Create `src/activity_goals.ts` (or add to an existing relevant file like `src/activities.ts` if deemed appropriate, though a new file might be cleaner)
+- `TASKS.md` (to update status upon completion)
 
-### ~~Interface Abstraction~~ **REMOVED**
-**Reason:** Current abstractions in `utils.ts` are sufficient. Further abstraction risks over-engineering a simple tool.
+### 4. **Implement Activity Time Series Tool**
+**Priority: High | Effort: Medium | Status: To Do**
 
-### ~~Build Configuration Enhancement~~ **REMOVED**
-**Reason:** Current TypeScript configuration works well. Optimization would provide minimal benefit.
+**Problem:** No tool to fetch time series data for overall daily activity metrics (e.g., total steps, distance, calories burned per day). The existing `get_exercises` tool lists logged activities but doesn't provide daily aggregate trends.
+**Why needed:** Essential for answering user questions like "how was my week?" by showing trends in key activity metrics over a specified period.
+**Solution:**
+- Create a new tool, e.g., `get_activity_timeseries`.
+- Utilize Fitbit API endpoint: `GET /1/user/-/activities/{resource-path}/date/{base-date}/{end-date}.json`.
+- The tool should accept `resourcePath` (e.g., 'steps', 'distance', 'calories', 'elevation'), `baseDate` (YYYY-MM-DD), and `endDate` (YYYY-MM-DD) parameters.
+- Define TypeScript interfaces for the API response (e.g., `ActivityTimeSeriesResponse`, `TimeSeriesDataPoint`).
+- Register the new tool in `src/index.ts`.
+- Ensure the `activity` OAuth scope is requested.
+**Files to modify:**
+- `src/index.ts` (for tool registration and import)
+- Create `src/activity_timeseries.ts` (or a similar name)
+- `TASKS.md` (to update status upon completion)
 
-### ~~Error Handling Standardization~~ **REMOVED**
-**Reason:** Current error handling via shared utilities is adequate. Further standardization is unnecessary complexity.
+### 5. **Implement Active Zone Minutes (AZM) Time Series Tool**
+**Priority: Medium | Effort: Low-Medium | Status: To Do**
+
+**Problem:** No dedicated tool to track Active Zone Minutes (AZM) trends over time. While individual activities might contain AZM data, a specific time series for daily total AZM is missing.
+**Why needed:** AZM is a key health and activity metric promoted by Fitbit. Providing a tool to track its trends is valuable for users monitoring their fitness.
+**Solution:**
+- Create a new tool, e.g., `get_azm_timeseries`.
+- Utilize Fitbit API endpoint: `GET /1/user/-/activities/active-zone-minutes/date/{base-date}/{end-date}.json`.
+- The tool should accept `baseDate` (YYYY-MM-DD) and `endDate` (YYYY-MM-DD) parameters.
+- Define TypeScript interfaces for the API response (e.g., `AzmTimeSeriesResponse`, `AzmDataPoint`).
+- Register the new tool in `src/index.ts`.
+- Ensure the `activity` OAuth scope is requested (Fitbit documentation confirms `activity` scope for AZM time series).
+**Files to modify:**
+- `src/index.ts` (for tool registration and import)
+- Add to `src/activity_timeseries.ts` (if created for task #4 and seems appropriate) or create a dedicated `src/azm.ts`.
+- `TASKS.md` (to update status upon completion)
 
 ## Implementation Recommendation
 
-**Recommended Action:** Complete **Environment Validation** (#1) only.
-
-**Optional:** Fix the minor type safety warnings if you want 100% clean linting.
+**Recommended Action:** 
+1. Prioritize the implementation of the new Fitbit API tools (Tasks #2, #3, #4, #5) as they directly enhance the server's capability to answer common user queries about their activity and well-being.
+2. Optionally, address the **Minor Type Safety Cleanup** (Task #1) if time permits and 100% clean linting is desired.
 
 ## Design Philosophy Reminder
 
