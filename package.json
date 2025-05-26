@@ -1,10 +1,18 @@
 {
   "name": "mcp-fitbit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "./build/index.js",
   "bin": {
     "mcp-fitbit": "./build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheDigitalNinja/mcp-fitbit.git"
+  },
+  "homepage": "https://github.com/TheDigitalNinja/mcp-fitbit#readme",
+  "bugs": {
+    "url": "https://github.com/TheDigitalNinja/mcp-fitbit/issues"
   },
   "scripts": {
     "test": "vitest run",
@@ -16,20 +24,29 @@
     "lint": "eslint src/**/*.ts --ignore-pattern src/**/*.test.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write src/**/*.ts",
-    "format:check": "prettier --check src/**/*.ts"
+    "format:check": "prettier --check src/**/*.ts",
+    "prepublishOnly": "npm run build && npm run test && npm run lint",
+    "prepack": "npm run build"
   },
   "keywords": [
     "mcp",
     "fitbit",
     "fitbit-api",
     "mcp-server",
-    "claude"
+    "claude",
+    "model-context-protocol",
+    "health-data",
+    "fitness-tracking",
+    "ai-assistant",
+    "typescript"
   ],
   "author": "Russell \"TheDigitalNinja\" Perkins",
   "license": "MIT",
-  "description": "MCP Server for interacting with Fitbit API",
+  "description": "Model Context Protocol (MCP) server for accessing Fitbit health and fitness data. Connect AI assistants like Claude to your Fitbit data for personalized health insights.",
   "files": [
-    "build"
+    "build/",
+    "README.md",
+    "LICENSE"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.0",
