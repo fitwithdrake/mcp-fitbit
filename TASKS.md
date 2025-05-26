@@ -8,16 +8,16 @@ This document outlines the remaining improvement opportunities for the MCP Fitbi
 *   **T1: Analyze existing test (`profile.test.ts`) and testing setup:** (✅ Completed)
     *   *Findings:* `profile.test.ts` uses Vitest with effective mocking of `utils.js` (for `registerTool` and `handleFitbitApiCall`). It tests tool registration, handler logic, error handling, and parameter/schema validation. This structure can serve as a template for other test files.
     *   *Framework:* Vitest is already integrated (`package.json` scripts for `test`, `test:coverage`, etc.).
-*   **T2: Confirm Vitest configuration for full module coverage:** Ensure `vitest.config.ts` is set up to include all `src/*.ts` files (excluding `*.test.ts` and `config.ts` if not directly testable) in coverage reports. Mark as complete once verified/updated.
-*   **T3: Write unit tests for `src/auth.ts`:** Focus on token handling, OAuth flow initiation, and request signing.
-*   **T4: Write unit tests for `src/utils.ts`:** Test `makeFitbitRequest` and any other utility functions.
-*   **T5: Write unit tests for `src/weight.ts`:** Cover API call construction and data handling.
-*   **T6: Write unit tests for `src/sleep.ts`:** Cover API call construction and data handling.
-*   **T7: Write unit tests for `src/activities.ts`:** Cover API call construction and data handling.
-*   **T8: Write unit tests for `src/profile.ts`:** Expand existing tests if necessary.
-*   **T9: Write unit tests for `src/heart-rate.ts`:** Cover API call construction and data handling for both endpoint types.
-*   **T10: Write unit tests for `src/nutrition.ts`:** Cover API call construction and data handling for all nutrition endpoints.
-*   **T11: Write unit tests for `src/index.ts`:** Test tool registration and server setup.
+*   **T2: Confirm Vitest configuration for full module coverage:** (✅ Completed) Ensure `vitest.config.ts` is set up to include all `src/*.ts` files (excluding `*.test.ts` and `config.ts` if not directly testable) in coverage reports. Mark as complete once verified/updated.
+*   **T3: Write unit tests for `src/weight.ts`:** (✅ Completed) Cover API call construction and data handling.
+*   **T4: Write unit tests for `src/sleep.ts`:** (✅ Completed) Cover API call construction and data handling.
+*   **T5: Write unit tests for `src/activities.ts`:** (✅ Completed) Cover API call construction and data handling.
+*   **T6: Write unit tests for `src/heart-rate.ts`:** (✅ Completed) Cover API call construction and data handling for both endpoint types.
+*   **T7: Write unit tests for `src/nutrition.ts`:** (✅ Completed) Cover API call construction and data handling for all nutrition endpoints.
+*   **T8: Write unit tests for `src/profile.ts`:** (✅ Completed) Expand existing tests if necessary.
+*   **T9: Write unit tests for `src/utils.ts`:** Test `makeFitbitRequest` and any other utility functions.
+*   **T10: Write unit tests for `src/auth.ts`:** Focus on token handling, OAuth flow initiation, and request signing.
+*   **T11: Write unit tests for `src/index.ts`:** (✅ Completed) Test tool registration and server setup.
 *   **T12: Document testing strategy:** Add a section to `README.md` or a new `TESTING.md` file explaining how to run tests and the overall testing approach.
 *   **T13: Achieve 80% test coverage:** Aim for a specific coverage target.
 
