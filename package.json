@@ -26,7 +26,7 @@
     "claude"
   ],
   "author": "Russell \"TheDigitalNinja\" Perkins",
-  "license": "ISC",
+  "license": "MIT",
   "description": "MCP Server for interacting with Fitbit API",
   "files": [
     "build"

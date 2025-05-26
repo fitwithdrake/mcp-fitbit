@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/TheDigitalNinja/mcp-fitbit/actions/workflows/ci.yml/badge.svg)](https://github.com/TheDigitalNinja/mcp-fitbit/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/TheDigitalNinja/mcp-fitbit/badge.svg?branch=main)](https://coveralls.io/github/TheDigitalNinja/mcp-fitbit?branch=main)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Fitbit API](https://img.shields.io/badge/Fitbit-00B0B9?logo=fitbit&logoColor=white)](https://dev.fitbit.com/)
