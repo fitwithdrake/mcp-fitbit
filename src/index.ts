@@ -51,7 +51,8 @@ function validateEnvironment(): void {
     missingVars.forEach(varName => {
       console.error(`   - ${varName}`);
     });
-    console.error('Please create a .env file in the project root. See README.md');
+    console.error(`Please create a .env file at: ${envPath}`);
+    console.error('See README.md for details on getting Fitbit API credentials.');
     process.exit(1);
   }
 }
