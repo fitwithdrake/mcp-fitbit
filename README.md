@@ -1,4 +1,11 @@
 # Fitbit MCP Server
+
+[![CI](https://github.com/TheDigitalNinja/mcp-fitbit/actions/workflows/ci.yml/badge.svg)](https://github.com/TheDigitalNinja/mcp-fitbit/actions/workflows/ci.yml)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Fitbit API](https://img.shields.io/badge/Fitbit-00B0B9?logo=fitbit&logoColor=white)](https://dev.fitbit.com/)
+
 > Connect AI assistants to your Fitbit health data
 
 Give your AI assistant access to your Fitbit data for personalized health insights, trend analysis, and automated tracking. Works with Claude Desktop and other MCP-compatible AI tools.
