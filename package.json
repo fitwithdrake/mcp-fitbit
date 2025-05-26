@@ -7,7 +7,7 @@
     "mcp-fitbit": "./build/index.js"
   },
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
