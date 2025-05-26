@@ -11,11 +11,12 @@ MCP server for Fitbit API integration providing health data access (weight, slee
 - `npm run dev` - Build and run with MCP inspector for testing/debugging
 - `npm run lint` - Check code quality and style issues
 - `npm run format` - Auto-fix code formatting
-- `npm test` - No tests configured yet
+- `npm test` - Run tests with Vitest
+- `npm run test:coverage` - Run tests with coverage report
 
 ## CI/CD
-- GitHub Actions workflow runs lint checks on push/PR to main branch
-- Located at `.github/workflows/lint.yml`
+- GitHub Actions workflow runs tests, lint checks, and build on push/PR to main branch
+- Located at `.github/workflows/ci.yml`
 
 ## Project Structure
 - `src/index.ts` - Main MCP server entry point, registers all tools
