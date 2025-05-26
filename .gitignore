@@ -5,3 +5,4 @@ build
 .fitbit-token.json
 .claude
 coverage
+*.tgz
