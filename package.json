@@ -1,10 +1,10 @@
 {
-  "name": "mcp-fitbit-server",
+  "name": "mcp-fitbit",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "./build/index.js",
   "bin": {
-    "fitbit": "./build/index.js"
+    "mcp-fitbit": "./build/index.js"
   },
   "scripts": {
     "test": "vitest",
@@ -18,8 +18,8 @@
     "format": "prettier --write src/**/*.ts",
     "format:check": "prettier --check src/**/*.ts"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["mcp", "fitbit", "fitbit-api", "mcp-server", "claude"],
+  "author": "Russell \"TheDigitalNinja\" Perkins",
   "license": "ISC",
   "description": "MCP Server for interacting with Fitbit API",
   "files": [
