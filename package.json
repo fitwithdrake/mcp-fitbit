@@ -9,7 +9,6 @@
   "scripts": {
     "test": "vitest run",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "build": "tsc",
     "start": "node build/index.js",
