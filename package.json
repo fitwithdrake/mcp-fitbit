@@ -18,7 +18,13 @@
     "format": "prettier --write src/**/*.ts",
     "format:check": "prettier --check src/**/*.ts"
   },
-  "keywords": ["mcp", "fitbit", "fitbit-api", "mcp-server", "claude"],
+  "keywords": [
+    "mcp",
+    "fitbit",
+    "fitbit-api",
+    "mcp-server",
+    "claude"
+  ],
   "author": "Russell \"TheDigitalNinja\" Perkins",
   "license": "ISC",
   "description": "MCP Server for interacting with Fitbit API",
@@ -40,6 +46,7 @@
     "@types/simple-oauth2": "^5.0.7",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
+    "@vitest/coverage-v8": "^3.1.4",
     "@vitest/ui": "^3.1.4",
     "eslint": "^9.27.0",
     "prettier": "^3.5.3",
