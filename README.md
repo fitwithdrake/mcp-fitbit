@@ -27,13 +27,39 @@ Give your AI assistant access to your Fitbit data for personalized health insigh
 **🚀 Want to test the tools right away?**
 
 ### Option 1: Install from npm (Recommended)
-```bash
-# Install globally
-npm install -g mcp-fitbit
+1. [Get Fitbit API credentials](https://dev.fitbit.com/)
+   - Create an app with OAuth 2.0 Application Type: `Personal`
+   - Set Callback URL: `http://localhost:3000/callback`
+   - Note your **Client ID** and **Client Secret**
 
-# Or run directly with npx
-npx mcp-fitbit
+2. Install the package globally:
+```bash
+npm install -g mcp-fitbit
 ```
+
+3. Add to your Claude Desktop config file:
+```json
+{
+  "mcpServers": {
+    "fitbit": {
+      "command": "mcp-fitbit",
+      "args": [],
+      "env": {
+        "FITBIT_CLIENT_ID": "your_client_id_here",
+        "FITBIT_CLIENT_SECRET": "your_client_secret_here"
+      }
+    }
+  }
+}
+```
+ - Config file location:
+   - Windows: %AppData%\Claude\claude_desktop_config.json
+   - macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
+   - Linux: ~/.config/Claude/claude_desktop_config.json
+
+4. Restart Claude Desktop and ask about your Fitbit data!
+
+
 
 ### Option 2: Development Setup
 1. [Get Fitbit API credentials](https://dev.fitbit.com/) (see Installation below)
