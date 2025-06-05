@@ -1,0 +1,1 @@
+{ "schema_version":"v1","name_for_human":"Fitbit MCP","name_for_model":"fitbit_mcp", "description_for_human":"Fetches my Fitbit data for ChatGPT.","auth":"none", "api":{"type":"openapi","url":"/openapi.yaml"} }
