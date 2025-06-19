@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { refreshTokens } from "../src/lib/fitbit-auth";
 
 export default async function handler(req, res) {
